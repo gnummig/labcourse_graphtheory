@@ -5,7 +5,7 @@ from  igraph import *
 import re
 g = Graph()
 f = open(sys.argv[1], 'r')
-w = open(sys.argv[1]+".legend" , 'w')
+#w = open(sys.argv[1]+".legend" , 'w')
 while True:
     line = f.readline().strip()
     if not line:
