@@ -1,0 +1,16 @@
+chr2	feat	transcript	32426378	32429083	0	+	.	gene_id "GENE.8140; transcript_id "GENE.8140"; FPKM "60.7790368272";
+chr2	feat	exon	32426378	32426432	0	+	.	gene_id "GENE.8140; transcript_id "GENE.8140"; FPKM "60.7790368272";
+chr2	feat	exon	32426726	32426815	0	+	.	gene_id "GENE.8140; transcript_id "GENE.8140"; FPKM "60.7790368272";
+chr2	feat	exon	32427817	32429083	0	+	.	gene_id "GENE.8140; transcript_id "GENE.8140"; FPKM "60.7790368272";
+chr2	feat	transcript	32426378	32429099	0	+	.	gene_id "GENE.8141; transcript_id "GENE.8141"; FPKM "2.55466052934";
+chr2	feat	exon	32426378	32426432	0	+	.	gene_id "GENE.8141; transcript_id "GENE.8141"; FPKM "2.55466052934";
+chr2	feat	exon	32426726	32426815	0	+	.	gene_id "GENE.8141; transcript_id "GENE.8141"; FPKM "2.55466052934";
+chr2	feat	exon	32427817	32427919	0	+	.	gene_id "GENE.8141; transcript_id "GENE.8141"; FPKM "2.55466052934";
+chr2	feat	exon	32428479	32429099	0	+	.	gene_id "GENE.8141; transcript_id "GENE.8141"; FPKM "2.55466052934";
+chr2	feat	transcript	32426387	32428601	0	+	.	gene_id "GENE.8142; transcript_id "GENE.8142"; FPKM "17.7404580153";
+chr2	feat	exon	32426387	32426815	0	+	.	gene_id "GENE.8142; transcript_id "GENE.8142"; FPKM "17.7404580153";
+chr2	feat	exon	32427817	32427919	0	+	.	gene_id "GENE.8142; transcript_id "GENE.8142"; FPKM "17.7404580153";
+chr2	feat	exon	32428479	32428601	0	+	.	gene_id "GENE.8142; transcript_id "GENE.8142"; FPKM "17.7404580153";
+chr2	feat	transcript	32427567	32428976	0	+	.	gene_id "GENE.8143; transcript_id "GENE.8143"; FPKM "12.972972973";
+chr2	feat	exon	32427567	32427919	0	+	.	gene_id "GENE.8143; transcript_id "GENE.8143"; FPKM "12.972972973";
+chr2	feat	exon	32428479	32428976	0	+	.	gene_id "GENE.8143; transcript_id "GENE.8143"; FPKM "12.972972973";
