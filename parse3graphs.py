@@ -150,6 +150,3 @@ problemOut = map(checkDegree, compGraph.degree(type="out"))
 problemNodes = [a*b for a,b in zip(problemIn, problemOut)]
 print "Problem Nodes in compacted graph:"
 print problemNodes
-
-
-
