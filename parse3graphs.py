@@ -4,10 +4,10 @@ import sys
 from  igraph import *
 import re
 
-def findProblemVertices ( graph )
-	inDegreeList =graph.degree(type="in")
-	outDegreeList =graph.degree(type="out")
-	for indegree in 
+#def findProblemVertices ( graph )
+#	inDegreeList =graph.degree(type="in")
+#	outDegreeList =graph.degree(type="out")
+#	for indegree in 
 	
 
 origGraph = Graph(directed=True)
