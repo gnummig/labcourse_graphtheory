@@ -4,11 +4,11 @@ import sys
 from  igraph import *
 import re
 
-#def findProblemVertices ( graph )
-#	inDegreeList =graph.degree(type="in")
-#	outDegreeList =graph.degree(type="out")
-#	for indegree in 
-	
+def checkDegree(x):
+	if x<2:
+		return 0
+	else:
+		return 1
 
 origGraph = Graph(directed=True)
 compGraph = Graph(directed=True)
@@ -145,6 +145,11 @@ while True:
 print "Edgelist of resolved graph"
 print resGraph.get_edgelist()
 
+problemIn = map(checkDegree, compGraph.degree(type="in"))
+problemOut = map(checkDegree, compGraph.degree(type="out"))
+problemNodes = [a*b for a,b in zip(problemIn, problemOut)]
+print "Problem Nodes in compacted graph:"
+print problemNodes
 
 
 
