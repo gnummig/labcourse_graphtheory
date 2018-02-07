@@ -27,8 +27,8 @@ def getGraph():
             f.readline()
             break;
         nodecount=int(line)
-        graph.add_vertices(nodecount+1)
-        edgecount = 0
+    graph.add_vertices(nodecount+1)
+    edgecount = 0
     while True:
         raw = f.readline().strip()
         if not line: break;
@@ -51,7 +51,7 @@ def getGraph():
             graph.es[edgecount]["label"] = el[2]
             graph.es[edgecount]["Flow/Capacity"] = el[6]
             graph.es[edgecount]["binExon"] = el[4][:-1]
-            edgecount = edgecount + 1
+        edgecount = edgecount + 1
     return graph
 
 f = open(sys.argv[1], 'r')
