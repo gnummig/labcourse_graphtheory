@@ -54,21 +54,38 @@ def getGraph():
         edgecount = edgecount + 1
     return graph
 
+def printGraphDatatable(graph, name):
+    inDegree =  graph.degree(type="in")
+    outDegree = graph.degree(type="out")
+    problemNodes = [a*b for a,b in zip( map(checkDegree, inDegree), map(checkDegree, outDegree))]
+    centrality = graph.evcent()
+    
+    print name + "\t" + "Vertex\t" + "In_Degree\t" + "Out_Degree\t" + "ProblemNode?\t" + "Centrality"
+    for i in range(0, graph.vcount()):
+        print "\t" + str(i) + "\t" + str(inDegree[i]) + "\t" + str(outDegree[i]) + "\t" + str(problemNodes[i]) + "\t" + str(centrality[i])
+    print("")
+    return
+
 f = open(sys.argv[1], 'r')
 origGraph = getGraph()
 compGraph = getGraph()
 resGraph = getGraph()
-#w = open(sys.argv[1]+".legend" , 'w')
 
-print "Edgelist of original graph"
-print origGraph.get_edgelist()
-print "Edgelist of compacted graph"
-print compGraph.get_edgelist()
-print "Edgelist of resolved graph"
-print resGraph.get_edgelist()
+if  len(sys.argv)>2:
+    printGraphDatatable(origGraph, "origGraph[" + sys.argv[2] + "]")
+    printGraphDatatable(compGraph, "compGraph[" + sys.argv[2] + "]")
+    printGraphDatatable(resGraph, "resGraph[" + sys.argv[2] + "]")
+else:
+    printGraphDatatable(origGraph, "origGraph")
+    printGraphDatatable(compGraph, "compGraph")
+    printGraphDatatable(resGraph, "resGraph")
 
-problemIn = map(checkDegree, compGraph.degree(type="in"))
-problemOut = map(checkDegree, compGraph.degree(type="out"))
-problemNodes = [a*b for a,b in zip(problemIn, problemOut)]
-print "Problem Nodes in compacted graph:"
-print problemNodes
+
+#print "Edgelist of original graph"
+#print origGraph.get_edgelist()
+#print "Edgelist of compacted graph"
+#print compGraph.get_edgelist()
+#print "Edgelist of resolved graph"
+#print resGraph.get_edgelist()
+#print "Problem Nodes in compacted graph:"
+#print problemNodes
