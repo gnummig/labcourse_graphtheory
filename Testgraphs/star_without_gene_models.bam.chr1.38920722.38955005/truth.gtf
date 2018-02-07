@@ -1,0 +1,15 @@
+chr1	feat	transcript	38920722	38955005	0	-	.	gene_id "GENE.310; transcript_id "GENE.310"; FPKM "9.38041733547";
+chr1	feat	exon	38954735	38955005	0	-	.	gene_id "GENE.310; transcript_id "GENE.310"; FPKM "9.38041733547";
+chr1	feat	exon	38952782	38952901	0	-	.	gene_id "GENE.310; transcript_id "GENE.310"; FPKM "9.38041733547";
+chr1	feat	exon	38941195	38941326	0	-	.	gene_id "GENE.310; transcript_id "GENE.310"; FPKM "9.38041733547";
+chr1	feat	exon	38930794	38930885	0	-	.	gene_id "GENE.310; transcript_id "GENE.310"; FPKM "9.38041733547";
+chr1	feat	exon	38928446	38928680	0	-	.	gene_id "GENE.310; transcript_id "GENE.310"; FPKM "9.38041733547";
+chr1	feat	exon	38924826	38924931	0	-	.	gene_id "GENE.310; transcript_id "GENE.310"; FPKM "9.38041733547";
+chr1	feat	exon	38920722	38922880	0	-	.	gene_id "GENE.310; transcript_id "GENE.310"; FPKM "9.38041733547";
+chr1	feat	transcript	38926988	38954998	0	-	.	gene_id "GENE.311; transcript_id "GENE.311"; FPKM "17.1781160016";
+chr1	feat	exon	38954735	38954998	0	-	.	gene_id "GENE.311; transcript_id "GENE.311"; FPKM "17.1781160016";
+chr1	feat	exon	38952782	38952901	0	-	.	gene_id "GENE.311; transcript_id "GENE.311"; FPKM "17.1781160016";
+chr1	feat	exon	38941195	38941326	0	-	.	gene_id "GENE.311; transcript_id "GENE.311"; FPKM "17.1781160016";
+chr1	feat	exon	38939334	38939463	0	-	.	gene_id "GENE.311; transcript_id "GENE.311"; FPKM "17.1781160016";
+chr1	feat	exon	38930794	38930885	0	-	.	gene_id "GENE.311; transcript_id "GENE.311"; FPKM "17.1781160016";
+chr1	feat	exon	38926988	38928680	0	-	.	gene_id "GENE.311; transcript_id "GENE.311"; FPKM "17.1781160016";

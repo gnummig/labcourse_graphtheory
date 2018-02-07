@@ -1,0 +1,14 @@
+chr1	feat	transcript	16091376	16092163	0	-	.	gene_id "GENE.1309; transcript_id "GENE.1309"; FPKM "9.97624703088";
+chr1	feat	exon	16091808	16092163	0	-	.	gene_id "GENE.1309; transcript_id "GENE.1309"; FPKM "9.97624703088";
+chr1	feat	exon	16091376	16091440	0	-	.	gene_id "GENE.1309; transcript_id "GENE.1309"; FPKM "9.97624703088";
+chr1	feat	transcript	16091376	16094743	0	-	.	gene_id "GENE.1310; transcript_id "GENE.1310"; FPKM "4.14445399828";
+chr1	feat	exon	16094446	16094743	0	-	.	gene_id "GENE.1310; transcript_id "GENE.1310"; FPKM "4.14445399828";
+chr1	feat	exon	16093591	16093765	0	-	.	gene_id "GENE.1310; transcript_id "GENE.1310"; FPKM "4.14445399828";
+chr1	feat	exon	16093249	16093415	0	-	.	gene_id "GENE.1310; transcript_id "GENE.1310"; FPKM "4.14445399828";
+chr1	feat	exon	16092773	16092910	0	-	.	gene_id "GENE.1310; transcript_id "GENE.1310"; FPKM "4.14445399828";
+chr1	feat	exon	16092571	16092680	0	-	.	gene_id "GENE.1310; transcript_id "GENE.1310"; FPKM "4.14445399828";
+chr1	feat	exon	16091808	16092017	0	-	.	gene_id "GENE.1310; transcript_id "GENE.1310"; FPKM "4.14445399828";
+chr1	feat	exon	16091376	16091440	0	-	.	gene_id "GENE.1310; transcript_id "GENE.1310"; FPKM "4.14445399828";
+chr1	feat	transcript	16091609	16092929	0	-	.	gene_id "GENE.1312; transcript_id "GENE.1312"; FPKM "63.5801464605";
+chr1	feat	exon	16092773	16092929	0	-	.	gene_id "GENE.1312; transcript_id "GENE.1312"; FPKM "63.5801464605";
+chr1	feat	exon	16091609	16092680	0	-	.	gene_id "GENE.1312; transcript_id "GENE.1312"; FPKM "63.5801464605";

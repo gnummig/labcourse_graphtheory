@@ -1,0 +1,16 @@
+chr1	feat	transcript	50957491	50972274	0	+	.	gene_id "GENE.1729; transcript_id "GENE.1729"; FPKM "18.6987951807";
+chr1	feat	exon	50957491	50957626	0	+	.	gene_id "GENE.1729; transcript_id "GENE.1729"; FPKM "18.6987951807";
+chr1	feat	exon	50969632	50969716	0	+	.	gene_id "GENE.1729; transcript_id "GENE.1729"; FPKM "18.6987951807";
+chr1	feat	exon	50971075	50971172	0	+	.	gene_id "GENE.1729; transcript_id "GENE.1729"; FPKM "18.6987951807";
+chr1	feat	exon	50972179	50972274	0	+	.	gene_id "GENE.1729; transcript_id "GENE.1729"; FPKM "18.6987951807";
+chr1	feat	transcript	50966806	51036764	0	+	.	gene_id "GENE.348; transcript_id "GENE.348"; FPKM "13.1567328918";
+chr1	feat	exon	50966806	50967732	0	+	.	gene_id "GENE.348; transcript_id "GENE.348"; FPKM "13.1567328918";
+chr1	feat	exon	50969632	50969716	0	+	.	gene_id "GENE.348; transcript_id "GENE.348"; FPKM "13.1567328918";
+chr1	feat	exon	50971075	50971172	0	+	.	gene_id "GENE.348; transcript_id "GENE.348"; FPKM "13.1567328918";
+chr1	feat	exon	50982111	50982253	0	+	.	gene_id "GENE.348; transcript_id "GENE.348"; FPKM "13.1567328918";
+chr1	feat	exon	50982386	50982590	0	+	.	gene_id "GENE.348; transcript_id "GENE.348"; FPKM "13.1567328918";
+chr1	feat	exon	50984592	50984963	0	+	.	gene_id "GENE.348; transcript_id "GENE.348"; FPKM "13.1567328918";
+chr1	feat	exon	50987393	50987502	0	+	.	gene_id "GENE.348; transcript_id "GENE.348"; FPKM "13.1567328918";
+chr1	feat	exon	50995057	50995186	0	+	.	gene_id "GENE.348; transcript_id "GENE.348"; FPKM "13.1567328918";
+chr1	feat	exon	51000041	51000067	0	+	.	gene_id "GENE.348; transcript_id "GENE.348"; FPKM "13.1567328918";
+chr1	feat	exon	51036144	51036764	0	+	.	gene_id "GENE.348; transcript_id "GENE.348"; FPKM "13.1567328918";

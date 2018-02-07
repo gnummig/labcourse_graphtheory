@@ -1,0 +1,14 @@
+chr1	feat	transcript	4766458	4775820	0	-	.	gene_id "GENE.1172; transcript_id "GENE.1172"; FPKM "21.9340659341";
+chr1	feat	exon	4775654	4775820	0	-	.	gene_id "GENE.1172; transcript_id "GENE.1172"; FPKM "21.9340659341";
+chr1	feat	exon	4774032	4774186	0	-	.	gene_id "GENE.1172; transcript_id "GENE.1172"; FPKM "21.9340659341";
+chr1	feat	exon	4772649	4772687	0	-	.	gene_id "GENE.1172; transcript_id "GENE.1172"; FPKM "21.9340659341";
+chr1	feat	exon	4767606	4767729	0	-	.	gene_id "GENE.1172; transcript_id "GENE.1172"; FPKM "21.9340659341";
+chr1	feat	exon	4766458	4766882	0	-	.	gene_id "GENE.1172; transcript_id "GENE.1172"; FPKM "21.9340659341";
+chr1	feat	transcript	4771302	4775820	0	-	.	gene_id "GENE.1173; transcript_id "GENE.1173"; FPKM "22.574888464";
+chr1	feat	exon	4775654	4775820	0	-	.	gene_id "GENE.1173; transcript_id "GENE.1173"; FPKM "22.574888464";
+chr1	feat	exon	4774032	4774186	0	-	.	gene_id "GENE.1173; transcript_id "GENE.1173"; FPKM "22.574888464";
+chr1	feat	exon	4772649	4772814	0	-	.	gene_id "GENE.1173; transcript_id "GENE.1173"; FPKM "22.574888464";
+chr1	feat	exon	4771302	4772382	0	-	.	gene_id "GENE.1173; transcript_id "GENE.1173"; FPKM "22.574888464";
+chr1	feat	transcript	4773653	4775773	0	-	.	gene_id "GENE.1174; transcript_id "GENE.1174"; FPKM "13.3639143731";
+chr1	feat	exon	4775654	4775773	0	-	.	gene_id "GENE.1174; transcript_id "GENE.1174"; FPKM "13.3639143731";
+chr1	feat	exon	4773653	4774186	0	-	.	gene_id "GENE.1174; transcript_id "GENE.1174"; FPKM "13.3639143731";

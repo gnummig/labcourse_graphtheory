@@ -1,0 +1,18 @@
+chr1	ryuto	transcript	16091609	16094741	0	-	.	gene_id "fres.0_0"; transcript_id "fres.0_0.1"; FPKM "640287.750000"; read_depth "89";
+chr1	ryuto	exon	16091609	16092680	0	-	.	gene_id "fres.0_0"; transcript_id "fres.0_0.1"; FPKM "640287.750000"; read_depth "89"; unsecurities "2(0), 6(1)";
+chr1	ryuto	exon	16092773	16092910	0	-	.	gene_id "fres.0_0"; transcript_id "fres.0_0.1"; FPKM "640287.750000"; read_depth "89"; unsecurities "2(0), 6(1)";
+chr1	ryuto	exon	16093249	16093415	0	-	.	gene_id "fres.0_0"; transcript_id "fres.0_0.1"; FPKM "640287.750000"; read_depth "89"; unsecurities "2(0), 6(1)";
+chr1	ryuto	exon	16093591	16093765	0	-	.	gene_id "fres.0_0"; transcript_id "fres.0_0.1"; FPKM "640287.750000"; read_depth "89"; unsecurities "2(0), 6(1)";
+chr1	ryuto	exon	16094446	16094741	0	-	.	gene_id "fres.0_0"; transcript_id "fres.0_0.1"; FPKM "640287.750000"; read_depth "89"; unsecurities "2(0), 6(1)";
+chr1	ryuto	transcript	16091609	16092929	0	-	.	gene_id "fres.0_0"; transcript_id "fres.0_0.2"; FPKM "1517985.500000"; read_depth "211";
+chr1	ryuto	exon	16091609	16092680	0	-	.	gene_id "fres.0_0"; transcript_id "fres.0_0.2"; FPKM "1517985.500000"; read_depth "211"; unsecurities "6(0), 2(0)";
+chr1	ryuto	exon	16092773	16092929	0	-	.	gene_id "fres.0_0"; transcript_id "fres.0_0.2"; FPKM "1517985.500000"; read_depth "211"; unsecurities "6(0), 2(0)";
+chr1	ryuto	transcript	16091609	16092929	0	-	.	gene_id "fres.0_0"; transcript_id "fres.0_0.3"; FPKM "28776.978516"; read_depth "4";
+chr1	ryuto	exon	16091609	16092017	0	-	.	gene_id "fres.0_0"; transcript_id "fres.0_0.3"; FPKM "28776.978516"; read_depth "4"; unsecurities "6(0), 2(2)";
+chr1	ryuto	exon	16092571	16092680	0	-	.	gene_id "fres.0_0"; transcript_id "fres.0_0.3"; FPKM "28776.978516"; read_depth "4"; unsecurities "6(0), 2(2)";
+chr1	ryuto	exon	16092773	16092929	0	-	.	gene_id "fres.0_0"; transcript_id "fres.0_0.3"; FPKM "28776.978516"; read_depth "4"; unsecurities "6(0), 2(2)";
+chr1	ryuto	transcript	16091382	16092929	0	-	.	gene_id "fres.0_0"; transcript_id "fres.0_0.4"; FPKM "35971.226562"; read_depth "5";
+chr1	ryuto	exon	16091382	16091440	0	-	.	gene_id "fres.0_0"; transcript_id "fres.0_0.4"; FPKM "35971.226562"; read_depth "5"; unsecurities "6(0), 2(2)";
+chr1	ryuto	exon	16091808	16092017	0	-	.	gene_id "fres.0_0"; transcript_id "fres.0_0.4"; FPKM "35971.226562"; read_depth "5"; unsecurities "6(0), 2(2)";
+chr1	ryuto	exon	16092571	16092680	0	-	.	gene_id "fres.0_0"; transcript_id "fres.0_0.4"; FPKM "35971.226562"; read_depth "5"; unsecurities "6(0), 2(2)";
+chr1	ryuto	exon	16092773	16092929	0	-	.	gene_id "fres.0_0"; transcript_id "fres.0_0.4"; FPKM "35971.226562"; read_depth "5"; unsecurities "6(0), 2(2)";
