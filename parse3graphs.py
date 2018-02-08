@@ -66,19 +66,18 @@ def printGraphDatatable(graph, name):
 
 
 f = open(sys.argv[1], 'r')
-
+truth = open(os.path.dirname(sys.argv[1])+"/../truth.gtf", 'r')
 # remove first line, after that the exon list followx
 f.readline().strip()
+exonPos=[[],[]]
 while True:
     line = f.readline().strip()
     if not line:
         break;
-    if "Multi" in line :
+    if "Bins" in line:
         break;
-    exonPos=[[],[]]
-    raw = f.readline()
-    exonPos[0].append(raw.split( " " )[1].split( "-" )[0])
-    exonPos[1].append(raw.split( " " )[1].split( "-" )[1])
+    exonPos[0].append(line.split( " " )[1].split( "-" )[0])
+    exonPos[1].append(line.split( " " )[1].split( "-" )[0])
 
 origGraph = getGraph()
 compGraph = getGraph()
