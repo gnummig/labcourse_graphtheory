@@ -66,22 +66,66 @@ def printGraphDatatable(graph, name):
 
 
 f = open(sys.argv[1], 'r')
-truth = open(os.path.dirname(sys.argv[1])+"/../truth.gtf", 'r')
 # remove first line, after that the exon list followx
 f.readline().strip()
-exonPos=[[],[]]
+exonPos=[]
 while True:
     line = f.readline().strip()
     if not line:
         break;
     if "Bins" in line:
         break;
-    exonPos[0].append(line.split( " " )[1].split( "-" )[0])
-    exonPos[1].append(line.split( " " )[1].split( "-" )[0])
+    exonPos.append([line.split( " " )[1].split( "-" )[0],line.split( " " )[1].split( "-" )[0]])
+
+
 
 origGraph = getGraph()
 compGraph = getGraph()
 resGraph = getGraph()
+
+# get the transcripts
+def getTranscripts(filename):
+    transcripts = open(os.path.dirname(sys.argv[1])+filename, 'r')
+    ExonPos=[[],[]]
+    Exoncount=-1
+    while True:
+        line = transcripts.readline().strip()
+        if not line:
+            break;
+        if "transcript" in line:
+            line = transcripts.readline().strip()
+            transcriptcount=transcriptcount+1
+            ExonPos[transcriptcount][1].append(line.split(";")[2][7:-1]) # FPKM value
+        ExonPos[transcriptcount][0].append(line.split()[3])
+        ExonPos[transcriptcount][0].append(line.split()[4])
+    return ExonPos
+#transExonPos = getTranscripts("/transcripts.gtf")
+#trueExonPos = getTranscripts("/../truth.gtf")
+
+# translate the binary exon representation into actual exon posiions
+splicePos=[]
+for binex in resGraph.es["binExon"]:
+    #indeces of the exons on the path
+    print binex
+    indices=[b for a,b in zip(binex,range(0,len(binex))) if int(a)>0]
+    # [exonpos start,exonpos end]
+    splicePosLong=[b for a,b in zip(binex,exonPos) if int(a)>0]
+    # flatten list
+    splicePosflat = [item for sublist in splicePosLong for item in sublist]
+    # merge neighboring exons
+    splicePosShort = [a for a in splicePosflat if ((a+1) not in splicePosflat)&((a-1) not in splicePosflat)]
+    # collect paths
+    splicePos.append(splicePosShort,[indices[0],indices[-1]])
+
+
+def checktranscript(transcript,graph,n):
+    if n == len(transcript):
+        return true;
+    if transcript[n] in graph:
+        return checktranscritp(transcript,exontruth,n+1)
+    return false
+
+
 
 if  len(sys.argv)>2:
     printGraphDatatable(origGraph, sys.argv[2] + "_or")
@@ -101,3 +145,4 @@ else:
 #print resGraph.get_edgelist()
 #print "Problem Nodes in compacted graph:"
 #print problemNodes
+# vim: noai:ts=4
