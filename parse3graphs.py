@@ -33,17 +33,19 @@ def getGraph():
         if  el[5]=="4":
             graph.es[edgecount]["type"] = 4
             graph.es[edgecount]["label"] = el[2]
+            graph.es[edgecount]["Flow/Capacity"] = 0
         if el[5]=="2":
             graph.es[edgecount]["type"] = 2
             graph.es[edgecount]["label"] = el[2]
             graph.es[edgecount]["Exon"] = el[3][1:]
+            graph.es[edgecount]["Flow/Capacity"] = int(el[6])
             # todo does this work???
         else:
             #w.write(str(i)+"\t"+str(el[3][1:])+"\n")
             #print el[0],"->",el[1], '[label="', "S"+str(i), el[6] ,'"];';
             graph.es[edgecount]["type"] = 1
             graph.es[edgecount]["label"] = el[2]
-            graph.es[edgecount]["Flow/Capacity"] = el[6]
+            graph.es[edgecount]["Flow/Capacity"] = int(el[6])
             graph.es[edgecount]["binExon"] = el[4][:-1]
         edgecount = edgecount + 1
     return graph
@@ -52,7 +54,7 @@ def printGraphDatatable(graph, name):
     inDegree =  graph.degree(type="in")
     outDegree = graph.degree(type="out")
     problemNodes = [1*(a>1)*(b>1) for a,b in zip(inDegree,outDegree)]
-    centrality = graph.as_undirected().evcent()
+    centrality = graph.evcent(directed=False, weights="Flow/Capacity")
 
     #GraphId, VertexCount, Vertex_ID, In_Degree, Out_Degree, ProblemNode?, Centrality
     for i in range(0, graph.vcount()):
