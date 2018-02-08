@@ -53,14 +53,33 @@ def printGraphDatatable(graph, name):
     outDegree = graph.degree(type="out")
     problemNodes = [1*(a>1)*(b>1) for a,b in zip(inDegree,outDegree)]
     centrality = graph.as_undirected().evcent()
-    
+
     #print name + "\t" + "Vertex\t" + "In_Degree\t" + "Out_Degree\t" + "ProblemNode?\t" + "Centrality"
     for i in range(0, graph.vcount()):
         print name +"\t" + str(i) + "\t" + str(inDegree[i]) + "\t" + str(outDegree[i]) + "\t" + str(problemNodes[i]) + "\t" + str(centrality[i])
         #print("")
     return
 
+##########
+#  main  #
+##########
+
+
 f = open(sys.argv[1], 'r')
+
+# remove first line, after that the exon list followx
+f.readline().strip()
+while True:
+    line = f.readline().strip()
+    if not line:
+        break;
+    if "Muliti" in line :
+        break;
+    exonPos=[[],[]]
+    raw = f.readline()
+    exonPos[0].append(raw.split( " " )[1].split( "-" )[0])
+    exonPos[1].append(raw.split( " " )[1].split( "-" )[1])
+
 origGraph = getGraph()
 compGraph = getGraph()
 resGraph = getGraph()
