@@ -4,12 +4,6 @@ import sys
 from  igraph import *
 import re
 
-def checkDegree(x):
-	if x<2:
-		return 0
-	else:
-		return 1
-
 #parse original graph
 def getGraph():
     graph = Graph(directed=True)
@@ -57,7 +51,7 @@ def getGraph():
 def printGraphDatatable(graph, name):
     inDegree =  graph.degree(type="in")
     outDegree = graph.degree(type="out")
-    problemNodes = [a*b for a,b in zip( map(checkDegree, inDegree), map(checkDegree, outDegree))]
+    problemNodes = [1*(a>1)*(b>1) for a,b in zip(inDegree,outDegree)]
     centrality = graph.evcent()
     
     print name + "\t" + "Vertex\t" + "In_Degree\t" + "Out_Degree\t" + "ProblemNode?\t" + "Centrality"
