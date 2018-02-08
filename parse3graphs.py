@@ -52,12 +52,12 @@ def printGraphDatatable(graph, name):
     inDegree =  graph.degree(type="in")
     outDegree = graph.degree(type="out")
     problemNodes = [1*(a>1)*(b>1) for a,b in zip(inDegree,outDegree)]
-    centrality = graph.evcent()
+    centrality = graph.as_undirected().evcent()
     
-    print name + "\t" + "Vertex\t" + "In_Degree\t" + "Out_Degree\t" + "ProblemNode?\t" + "Centrality"
+    #print name + "\t" + "Vertex\t" + "In_Degree\t" + "Out_Degree\t" + "ProblemNode?\t" + "Centrality"
     for i in range(0, graph.vcount()):
-        print "\t" + str(i) + "\t" + str(inDegree[i]) + "\t" + str(outDegree[i]) + "\t" + str(problemNodes[i]) + "\t" + str(centrality[i])
-    print("")
+        print name +"\t" + str(i) + "\t" + str(inDegree[i]) + "\t" + str(outDegree[i]) + "\t" + str(problemNodes[i]) + "\t" + str(centrality[i])
+        #print("")
     return
 
 f = open(sys.argv[1], 'r')
@@ -66,9 +66,9 @@ compGraph = getGraph()
 resGraph = getGraph()
 
 if  len(sys.argv)>2:
-    printGraphDatatable(origGraph, "origGraph[" + sys.argv[2] + "]")
-    printGraphDatatable(compGraph, "compGraph[" + sys.argv[2] + "]")
-    printGraphDatatable(resGraph, "resGraph[" + sys.argv[2] + "]")
+    printGraphDatatable(origGraph, sys.argv[2] + "_or")
+    printGraphDatatable(compGraph, sys.argv[2] + "_co")
+    printGraphDatatable(resGraph, sys.argv[2] + "_re")
 else:
     printGraphDatatable(origGraph, "origGraph")
     printGraphDatatable(compGraph, "compGraph")
