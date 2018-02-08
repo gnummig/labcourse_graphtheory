@@ -54,9 +54,9 @@ def printGraphDatatable(graph, name):
     problemNodes = [1*(a>1)*(b>1) for a,b in zip(inDegree,outDegree)]
     centrality = graph.as_undirected().evcent()
 
-    #print name + "\t" + "Vertex\t" + "In_Degree\t" + "Out_Degree\t" + "ProblemNode?\t" + "Centrality"
+    #GraphId, VertexCount, Vertex_ID, In_Degree, Out_Degree, ProblemNode?, Centrality
     for i in range(0, graph.vcount()):
-        print name +"\t" + str(i) + "\t" + str(inDegree[i]) + "\t" + str(outDegree[i]) + "\t" + str(problemNodes[i]) + "\t" + str(centrality[i])
+        print name +"\t"+ str(graph.vcount()) +"\t" + str(i) + "\t" + str(inDegree[i]) + "\t" + str(outDegree[i]) + "\t" + str(problemNodes[i]) + "\t" + str(centrality[i])
         #print("")
     return
 
@@ -73,7 +73,7 @@ while True:
     line = f.readline().strip()
     if not line:
         break;
-    if "Muliti" in line :
+    if "Multi" in line :
         break;
     exonPos=[[],[]]
     raw = f.readline()
