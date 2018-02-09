@@ -46,7 +46,7 @@ def getGraph():
             graph.es[edgecount]["type"] = 1
             graph.es[edgecount]["label"] = el[2]
             graph.es[edgecount]["Flow/Capacity"] = int(el[6])
-            graph.es[edgecount]["binExon"] = el[4][:-1]
+            graph.es[edgecount]["binExon"] = el[3][1:]
         edgecount = edgecount + 1
     return graph
 
@@ -77,7 +77,7 @@ while True:
         break;
     if "Bins" in line:
         break;
-    exonPos.append([line.split( " " )[1].split( "-" )[0],line.split( " " )[1].split( "-" )[0]])
+    exonPos.append([line.split( " " )[1].split( "-" )[0],line.split( " " )[1].split( "-" )[1]])
 
 
 
@@ -106,18 +106,24 @@ def getTranscripts(filename):
 
 # translate the binary exon representation into actual exon posiions
 splicePos=[]
+print resGraph
 for binex in resGraph.es["binExon"]:
     #indeces of the exons on the path
     print binex
     indices=[b for a,b in zip(binex,range(0,len(binex))) if int(a)>0]
+    print indices
     # [exonpos start,exonpos end]
     splicePosLong=[b for a,b in zip(binex,exonPos) if int(a)>0]
+    print splicePosLong
     # flatten list
-    splicePosflat = [item for sublist in splicePosLong for item in sublist]
+    splicePosflat = [int(item) for sublist in splicePosLong for item in sublist]
+    print splicePosflat
     # merge neighboring exons
     splicePosShort = [a for a in splicePosflat if ((a+1) not in splicePosflat)&((a-1) not in splicePosflat)]
+    print splicePosShort
     # collect paths
-    splicePos.append(splicePosShort,[indices[0],indices[-1]])
+    splicePos.append([splicePosShort,[indices[0],indices[-1]]])
+    print splicePos
 
 
 def checktranscript(transcript,graph,n):
