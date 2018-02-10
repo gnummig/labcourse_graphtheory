@@ -58,7 +58,8 @@ def printGraphDatatable( graph , name ):
 
     #GraphId, VertexCount, Vertex_ID, In_Degree, Out_Degree, ProblemNode?, Centrality
     for i in range( 0 , graph.vcount() ):
-        print name +"\t"+ str( graph.vcount() ) + "\t" + str(i) + "\t" + str( inDegree[i] ) + "\t" + str( outDegree[i] ) + "\t" + str( problemNodes[i] ) + "\t" + str( centrality[i] )
+        foo = ""
+#print name +"\t"+ str( graph.vcount() ) + "\t" + str(i) + "\t" + str( inDegree[i] ) + "\t" + str( outDegree[i] ) + "\t" + str( problemNodes[i] ) + "\t" + str( centrality[i] )
         #print("")
     return
 
@@ -77,7 +78,7 @@ while True:
         break;
     if "Bins" in line:
         break;
-    exonPos.append( [ line.split(" ")[1].split("-")[0] , line.split(" ")[1].split("-")[1] ] )
+    exonPos.append( [ int( line.split(" ")[1].split("-")[0] ) , int( line.split(" ")[1].split("-")[1] ) ] )
 
 
 
@@ -119,25 +120,27 @@ for idx , binex in enumerate( resGraph.es[ "binExon" ] ) :
     # collect the edges of the resolved splicegraph
     spliceEdges.append( [ splicePosShort , [ resGraph.es[idx].source , resGraph.es[idx].target,resGraph.es[idx]["label"] , 0 ] ] )
 
-
-def checktranscript( transcript , graph , startnode, truePathVar ) :
+def checktranscript( transcript ,transcriptPosition, graph , startnode , truePathVar ) :
     # if in the true trpts, take all paths, and mark used ones, if in the transpts, take only marked paths
     edgeset = [ edge for edge in  graph if edge[1][0] == startnode and ( edge[1][3] or truePathVar )  ]
     for edge in edgeset :
-    #for edge in [ chooseEdge in graph if ( chooseEdge[1][0] == startnode and ( chooseEdge["used"] or truePathVar )) ] :
         thisedge = True # becomes false if one exon missmatches
-        for exon in edge[0][1:-1]: # check whether exons of the edge are in the transcript
-            if not exon in transcript[0]:
+        if len(transcript[0]) <= transcriptPosition + len(edge[0]) -2 :
+            thisedge = False # if the edge is too long dont try to compare it, try the next edge
+            continue;
+        for idx,splice in enumerate(edge[0][1:-1]): # check whether exons of the edge are in the transcript
+            if not splice ==  transcript[0][transcriptPosition + idx +1]:
                 thisedge = False # if any exon missmatches, try the next edge
                 break; # dont try no more exons
+        # did we maybe miss splices in the transcript
+       # if not len(edge[0][2:-2]) == (transcript[0].index( edge[0][-2]) - transcript[0].index( edge[0][2] ) ):
+        #    continue; # this transcript seems to have  more splices on the edge 
         if not thisedge:
             continue; # with next edge
+
         if not edge[1][1] == 1: #' not at the end yet?
             # iteration 
-            transcriptFound = checktranscript( transcript , graph , edge[1][1] , truePathVar )
-            print " not the last edge, but a fitting:"
-            print edge
-            print transcript
+            transcriptFound = checktranscript( transcript, transcriptPosition + len(edge[0][1:-1]) , graph , edge[1][1] , truePathVar )
             # if no path based on the current edge is found, continue and try another one
             if not transcriptFound:
                 continue;# with next edge
@@ -146,6 +149,9 @@ def checktranscript( transcript , graph , startnode, truePathVar ) :
                 transcriptFound.append( edge[1][2] )
                 edge[1][3]= edge[1][3] or truePathVar # if the true paths passes, this is a valid edge
                 return transcriptFound
+        # check if the transcript is covered til the end by this last exon
+        elif not transcriptPosition + len(edge[0]) == len(transcript[0])  :
+            continue;
         else:
             # initialize with the edge that lead to endnode
             transcriptFound = [ edge[1][2] ]
@@ -153,11 +159,13 @@ def checktranscript( transcript , graph , startnode, truePathVar ) :
             return transcriptFound
     # there were no edges so this we wont get anywhere from here
     return False
+
 def getTranscripPath( transcripts , truePathVar ):
     paths = []
     for transcript in transcripts:
-        paths.append( checktranscript( transcript , spliceEdges , 0 , truePathVar ) )
+        paths.append( checktranscript( transcript , 0 , spliceEdges , 0 , truePathVar ) )
     return paths
+
 truePaths = getTranscripPath( trueExonPos , 1 )
 transcriptPaths = getTranscripPath( transcriptExonPos, 0  )
 print "transcript paths through the graph"
