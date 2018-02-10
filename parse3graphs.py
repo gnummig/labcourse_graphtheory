@@ -132,12 +132,8 @@ def checktranscript( transcript ,transcriptPosition, graph , startnode , truePat
             if not splice ==  transcript[0][transcriptPosition + idx +1]:
                 thisedge = False # if any exon missmatches, try the next edge
                 break; # dont try no more exons
-        # did we maybe miss splices in the transcript
-       # if not len(edge[0][2:-2]) == (transcript[0].index( edge[0][-2]) - transcript[0].index( edge[0][2] ) ):
-        #    continue; # this transcript seems to have  more splices on the edge 
         if not thisedge:
             continue; # with next edge
-
         if not edge[1][1] == 1: #' not at the end yet?
             # iteration 
             transcriptFound = checktranscript( transcript, transcriptPosition + len(edge[0][1:-1]) , graph , edge[1][1] , truePathVar )
@@ -152,6 +148,9 @@ def checktranscript( transcript ,transcriptPosition, graph , startnode , truePat
         # check if the transcript is covered til the end by this last exon
         elif not transcriptPosition + len(edge[0]) == len(transcript[0])  :
             continue;
+        elif transcript[0][-1] < exonPos[-1][0]:
+            if not transcript[0][-1] == edge[0][-1]:
+                continue;
         else:
             # initialize with the edge that lead to endnode
             transcriptFound = [ edge[1][2] ]
