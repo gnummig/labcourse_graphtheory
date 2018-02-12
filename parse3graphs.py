@@ -151,6 +151,9 @@ def checktranscript( transcript ,transcriptPosition, graph , startnode , truePat
         elif transcript[0][-1] < exonPos[-1][0]:
             if not transcript[0][-1] == edge[0][-1]:
                 continue;
+        #elif transcript[0][0] > exonPos[0][1]:
+        #    raise ValueError('A very specific bad thing happened.')
+        #    continue;
         else:
             # initialize with the edge that lead to endnode
             transcriptFound = [ edge[1][2] ]
@@ -164,13 +167,13 @@ def getTranscripPath( transcripts , truePathVar ):
     for transcript in transcripts:
         paths.append( checktranscript( transcript , 0 , spliceEdges , 0 , truePathVar ) )
     return paths
-
+#def getChimaerNode
 truePaths = getTranscripPath( trueExonPos , 1 )
 transcriptPaths = getTranscripPath( transcriptExonPos, 0  )
-print "transcript paths through the graph"
-print   transcriptPaths
-print "true paths through the graph"
+print "true paths  through the graph"
 print   truePaths
+print "transcript paths that go only through edges of the graph that are used by truth"
+print   transcriptPaths
 for idx,path in enumerate(transcriptPaths):
     if path and path in truePaths:
         print "correct transcript:"
