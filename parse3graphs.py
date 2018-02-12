@@ -1,12 +1,13 @@
 #!/usr/bin/env python2
 
 import sys
-from  igraph import *
+from  networkx import *
 import re
+import os
 
 #parse original graph
 def getGraph():
-    graph = Graph( directed = True )
+    graph = MultiDiGraph()
     while True:
         line = f.readline().strip()
         if not line:
@@ -21,45 +22,35 @@ def getGraph():
             f.readline()
             break;
         nodecount = int(line)
-    graph.add_vertices( nodecount + 1 )
-    edgecount = 0
+        graph.add_nodes_from(range(0, nodecount))
+
     while True:
         raw = f.readline().strip()
         if not line: break;
         if raw == '@attributes':
             break;
         el = raw.split()
-        graph.add_edges( [ (int( el[0] ) , int( el[1] ) ) ] )
         if  el[5]=="4":
-            graph.es[ edgecount ]["type"] = 4
-            graph.es[ edgecount ]["label"] = el[2]
-            graph.es[ edgecount ]["Flow/Capacity"] = 0
-        if el[5]=="2":
-            graph.es[ edgecount ]["type"] = 2
-            graph.es[ edgecount ]["label"] = el[2]
-            graph.es[ edgecount ]["Exon"] = el[3][1:]
-            graph.es[ edgecount ]["Flow/Capacity"] = int( el[6] )
+            graph.add_edge( int( el[0] ) , int( el[1] ), type=4, label=el[2], Flow=0 )
+        elif el[5]=="2":
+            graph.add_edge( int( el[0] ) , int( el[1] ), type=2, label=el[2], Exon=el[3][1:], Flow=int( el[6]) )
             # todo does this work???
         else:
             #w.write(str(i)+"\t"+str(el[3][1:])+"\n")
             #print el[0],"->",el[1], '[label="', "S"+str(i), el[6] ,'"];';
-            graph.es[ edgecount ]["type"] = 1
-            graph.es[ edgecount ]["label"] = el[2]
-            graph.es[ edgecount ]["Flow/Capacity"] = int(el[6])
-            graph.es[ edgecount ]["binExon"] = el[3][1:]
-        edgecount = edgecount + 1
+            graph.add_edge( int( el[0] ) , int( el[1] ), type=1, label=el[2], binExon=el[3][1:], Flow=int( el[6]) )
     return graph
 
 def printGraphDatatable( graph , name ):
-    inDegree =  graph.degree( type = "in" )
-    outDegree = graph.degree( type = "out" )
+    inDegree = [b for (a,b) in list(graph.in_degree())]
+    outDegree = [b for (a,b) in list(graph.out_degree())]
     problemNodes = [ 1*( a > 1 )*( b > 1 ) for a,b in zip( inDegree , outDegree ) ]
-    centrality = graph.evcent( directed = False , weights = "Flow/Capacity" )
+    centrality = networkx.degree_centrality(graph).values()
+
 
     #GraphId, VertexCount, Vertex_ID, In_Degree, Out_Degree, ProblemNode?, Centrality
-    for i in range( 0 , graph.vcount() ):
-        foo = ""
-#print name +"\t"+ str( graph.vcount() ) + "\t" + str(i) + "\t" + str( inDegree[i] ) + "\t" + str( outDegree[i] ) + "\t" + str( problemNodes[i] ) + "\t" + str( centrality[i] )
+    for i in range( 0 , graph.number_of_nodes() ):
+        print name +"\t"+ str( graph.number_of_nodes() ) + "\t" + str(i) + "\t" + str( inDegree[i] ) + "\t" + str( outDegree[i] ) + "\t" + str( problemNodes[i] ) + "\t" + str( centrality[i] )
         #print("")
     return
 
@@ -108,7 +99,8 @@ trueExonPos = getTranscripts( "/../truth.gtf" )
 # todo neeed to flatten that list.
 # translate the binary exon representation into actual exon posiions
 spliceEdges = []
-for idx , binex in enumerate( resGraph.es[ "binExon" ] ) :
+for (startnode, endnode , key) in list(resGraph.edges(keys=True)) :
+    binex=resGraph[startnode][endnode][key]['binExon']
     #indeces of the exons on the path
     indices = [ b for a,b in zip( binex , range( 0 , len( binex ))) if int( a ) > 0 ]
     # [exonpos start,exonpos end]
@@ -118,7 +110,7 @@ for idx , binex in enumerate( resGraph.es[ "binExon" ] ) :
     # merge neighboring exons
     splicePosShort = [ a for a in splicePosflat if ( ( a + 1 ) not in splicePosflat ) & ( ( a - 1 ) not in splicePosflat ) ]
     # collect the edges of the resolved splicegraph
-    spliceEdges.append( [ splicePosShort , [ resGraph.es[idx].source , resGraph.es[idx].target,resGraph.es[idx]["label"] , 0 ] ] )
+    spliceEdges.append( [ splicePosShort , [ startnode , endnode, resGraph[startnode][endnode][key]['label'], 0 ] ] )
 
 def checktranscript( transcript ,transcriptPosition, graph , startnode , truePathVar ) :
     # if in the true trpts, take all paths, and mark used ones, if in the transpts, take only marked paths
