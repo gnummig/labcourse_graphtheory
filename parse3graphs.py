@@ -41,18 +41,36 @@ def getGraph():
             graph.add_edge( int( el[0] ) , int( el[1] ), type=1, label=el[2], binExon=el[3][1:], Flow=int( el[6]) )
     return graph
 
-def printGraphDatatable( graph , name ):
+def detectProblemNodes(graph):
     inDegree = [b for (a,b) in list(graph.in_degree())]
     outDegree = [b for (a,b) in list(graph.out_degree())]
     problemNodes = [ 1*( a > 1 )*( b > 1 ) for a,b in zip( inDegree , outDegree ) ]
-    centrality = networkx.degree_centrality(graph).values()
-
-
+    for idx, isProblemNode in enumerate(problemNodes):
+        graph.node[idx]['isProblemNode']=isProblemNode
+    
+def printGraphDatatable( graph , name ):
+    inDegree = [b for (a,b) in list(graph.in_degree())]
+    outDegree = [b for (a,b) in list(graph.out_degree())]
+    problemNodes=get_node_attributes(graph,'isProblemNode')
+    centrality=degree_centrality(graph).values()
     #GraphId, VertexCount, Vertex_ID, In_Degree, Out_Degree, ProblemNode?, Centrality
     for i in range( 0 , graph.number_of_nodes() ):
         print name +"\t"+ str( graph.number_of_nodes() ) + "\t" + str(i) + "\t" + str( inDegree[i] ) + "\t" + str( outDegree[i] ) + "\t" + str( problemNodes[i] ) + "\t" + str( centrality[i] )
         #print("")
     return
+
+def createDotFile(graph, path):
+    dotFile = open( path , 'w')
+    dotFile.write("digraph g {\n")
+    dotFile.write("graph [pad=\"0\", nodesep=\"0\", ranksep=\"0\"];\n")
+    dotFile.write("rankdir=LR;\n")
+    for (startnode, endnode , key) in list(graph.edges(keys=True)) :
+        dotFile.write(str(startnode) + "->" + str(endnode) + '[label="' + str(graph[startnode][endnode][key]['Flow']) + '"];\n')
+    for idx, isProblemNode  in enumerate(get_node_attributes(graph, 'isProblemNode').values()):
+        if isProblemNode == 1:  
+            dotFile.write('"' + str(idx) + '" [shape=circle, style=filled, fillcolor=red]' )
+    dotFile.write("}")
+    dotFile.close() 
 
 ##########
 #  main  #
@@ -210,7 +228,9 @@ for idx,path in enumerate(transcriptPaths):
         print trueExonPos[idx]
 
 
-
+detectProblemNodes(origGraph)
+detectProblemNodes(compGraph)
+detectProblemNodes(resGraph)
 
 ## should output a list of edges for each transcript and for the truth, how many transcripts have no path
 
@@ -222,7 +242,12 @@ else:
     printGraphDatatable( origGraph , "origGraph" )
     printGraphDatatable( compGraph , "compGraph" )
     printGraphDatatable( resGraph , "resGraph" )
+    
 
+for idx in range(0,len(sys.argv)-1):
+    if sys.argv[idx] == "-dot":
+        createDotFile(compGraph, sys.argv[idx+1])
+        
 
 #print "Edgelist of original graph"
 #print origGraph.get_edgelist()
