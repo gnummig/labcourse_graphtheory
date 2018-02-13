@@ -93,6 +93,7 @@ def getTranscripts( filename ):
             ExonPos.append( [ [] , line.split(";")[2][7:-1] ] ) # FPKM value
         ExonPos[ transcriptcount ][0].append( int( line.split()[3] ) )
         ExonPos[ transcriptcount ][0].append( int( line.split()[4] ) )
+        ExonPos[ transcriptcount ][0].sort()
     return ExonPos
 transcriptExonPos = getTranscripts( "/transcripts.gtf" )
 trueExonPos = getTranscripts( "/../truth.gtf" )
@@ -109,6 +110,8 @@ for (startnode, endnode , key) in list(resGraph.edges(keys=True)) :
     splicePosflat = [ int( item ) for sublist in splicePosLong for item in sublist ]
     # merge neighboring exons
     splicePosShort = [ a for a in splicePosflat if ( ( a + 1 ) not in splicePosflat ) & ( ( a - 1 ) not in splicePosflat ) ]
+    # sort the list, since sometimes the true tanscripts are reversed
+    splicePosShort.sort()
     # collect the edges of the resolved splicegraph
     spliceEdges.append( [ splicePosShort , [ startnode , endnode, resGraph[startnode][endnode][key]['label'], 0 ] ] )
 
@@ -120,6 +123,11 @@ def checktranscript( transcript ,transcriptPosition, graph , startnode , truePat
         if len(transcript[0]) <= transcriptPosition + len(edge[0]) -2 :
             thisedge = False # if the edge is too long dont try to compare it, try the next edge
             continue;
+        # if on the first edge, we need to check if the transcript really starts on the first edge
+        if startnode==0:
+            if transcript[0][0] > exonPos[0][1]:
+                if not transcript[0][0]== edge[0][0]:
+                    continue;
         for idx,splice in enumerate(edge[0][1:-1]): # check whether exons of the edge are in the transcript
             if not splice ==  transcript[0][transcriptPosition + idx +1]:
                 thisedge = False # if any exon missmatches, try the next edge
@@ -143,9 +151,6 @@ def checktranscript( transcript ,transcriptPosition, graph , startnode , truePat
         elif transcript[0][-1] < exonPos[-1][0]:
             if not transcript[0][-1] == edge[0][-1]:
                 continue;
-        #elif transcript[0][0] > exonPos[0][1]:
-        #    raise ValueError('A very specific bad thing happened.')
-        #    continue;
         else:
             # initialize with the edge that lead to endnode
             transcriptFound = [ edge[1][2] ]
@@ -159,7 +164,30 @@ def getTranscripPath( transcripts , truePathVar ):
     for transcript in transcripts:
         paths.append( checktranscript( transcript , 0 , spliceEdges , 0 , truePathVar ) )
     return paths
-#def getChimaerNode
+
+# takes a transcript path that is known to be chimaer, and a position from which ti start searching
+def getChimaerNodes(transcriptPath , position):
+    maxindex=0
+    for truePath in truePaths:
+        for idx,edge in enumerate(truePath[position:-1]):
+            # search for the longest path you can go in one transcript from "position"
+            if not edge in transcriptPath:
+                maxindex=max(maxindex,idx)
+                if idx == maxindex:
+                    maxTranscriptPath = transcriptPath
+    # maxindex should now contain the maximum number of edges walked in one piece
+    position = position + maxindex
+    # if that does not take us to the end, iterate!
+    if not position  == len(transcriptPath):
+       chimaernodes = getChimaerIndex(transcriptPath, position)
+       # ther is a lot of unknown foo here
+       chimaernodes.append( [ node for node in graph if outedge == maxTranscriptPath [ maxindex ] ] )
+    # if it is the end initialixe the list
+    else:
+        return []
+    return chimaernodes
+
+
 truePaths = getTranscripPath( trueExonPos , 1 )
 transcriptPaths = getTranscripPath( transcriptExonPos, 0  )
 print "true paths  through the graph"
@@ -173,6 +201,10 @@ for idx,path in enumerate(transcriptPaths):
     elif path:
         print "chimaer transcript:"
         print path
+        chimaerNodes.append(getChimaerNodes(path))
+        print "the responsible nodes are:"
+        print chimaerNodes
+        print " i guess this list should be utterly flatended and compacted"
     else:
         print "incorrect transcript"
         print trueExonPos[idx]
