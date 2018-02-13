@@ -67,10 +67,10 @@ def createDotFile(graph, path):
     for (startnode, endnode , key) in list(graph.edges(keys=True)) :
         dotFile.write(str(startnode) + "->" + str(endnode) + '[label="' + str(graph[startnode][endnode][key]['Flow']) + '"];\n')
     for idx, isProblemNode  in enumerate(get_node_attributes(graph, 'isProblemNode').values()):
-        if isProblemNode == 1:  
+        if isProblemNode == 1:
             dotFile.write('"' + str(idx) + '" [shape=circle, style=filled, fillcolor=red]' )
     dotFile.write("}")
-    dotFile.close() 
+    dotFile.close()
 
 ##########
 #  main  #
