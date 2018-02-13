@@ -167,21 +167,23 @@ def getTranscripPath( transcripts , truePathVar ):
 
 # takes a transcript path that is known to be chimaer, and a position from which ti start searching
 def getChimaerNodes(transcriptPath , position):
-    maxindex=0
+    maxhops=0
     for truePath in truePaths:
-        for idx,edge in enumerate(truePath[position:-1]):
-            # search for the longest path you can go in one transcript from "position"
-            if not edge in transcriptPath:
-                maxindex=max(maxindex,idx)
-                if idx == maxindex:
-                    maxTranscriptPath = transcriptPath
+        thispath=True
+        if truePath:
+            for idx,edge in enumerate(truePath[position:]):
+                # search for the longest path you can go in one transcript from "position"
+                if edge in transcriptPath:
+                    maxhops = max(maxhops,idx+1)
+                else:
+                    break;
     # maxindex should now contain the maximum number of edges walked in one piece
-    position = position + maxindex
+    position = position + maxhops
     # if that does not take us to the end, iterate!
-    if not position  == len(transcriptPath):
-       chimaernodes = getChimaerIndex(transcriptPath, position)
-       # ther is a lot of unknown foo here
-       chimaernodes.append( [ node for node in graph if outedge == maxTranscriptPath [ maxindex ] ] )
+    if  position  != len(transcriptPath):
+       chimaernodes = getChimaerNodes(transcriptPath, position)
+       # find the end node of the last edge that matched, that is going to be the responsible one
+       chimaernodes.append( [v for (u,v,c) in list(resGraph.edges(keys=True)) if resGraph[u][v][c]['label'] == transcriptPath [ maxhops ] ] )
     # if it is the end initialixe the list
     else:
         return []
@@ -194,6 +196,7 @@ print "true paths  through the graph"
 print   truePaths
 print "transcript paths that go only through edges of the graph that are used by truth"
 print   transcriptPaths
+chimaerNodesNested=[]
 for idx,path in enumerate(transcriptPaths):
     if path and path in truePaths:
         print "correct transcript:"
@@ -201,10 +204,11 @@ for idx,path in enumerate(transcriptPaths):
     elif path:
         print "chimaer transcript:"
         print path
-        chimaerNodes.append(getChimaerNodes(path))
+        chimaerNodesNested.append(getChimaerNodes(path , 0))
         print "the responsible nodes are:"
+        # double flatten the list and remove duplicates by back and forth transforming to a set
+        chimaerNodes = list(set([ node for sublist in chimaerNodesNested for subsublist in sublist for  node in subsublist] ) )
         print chimaerNodes
-        print " i guess this list should be utterly flatended and compacted"
     else:
         print "incorrect transcript"
         print trueExonPos[idx]
