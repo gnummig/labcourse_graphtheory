@@ -66,9 +66,12 @@ def createDotFile(graph, path):
     dotFile.write("rankdir=LR;\n")
     for (startnode, endnode , key) in list(graph.edges(keys=True)) :
         dotFile.write(str(startnode) + "->" + str(endnode) + '[label="' + str(graph[startnode][endnode][key]['Flow']) + '"];\n')
-    for idx, isProblemNode  in enumerate(get_node_attributes(graph, 'isProblemNode').values()):
-        if isProblemNode == 1:
-            dotFile.write('"' + str(idx) + '" [shape=circle, style=filled, fillcolor=red]' )
+    isProblemNode = get_node_attributes(graph, 'isProblemNode').values();
+    for idx  in range(0,graph.number_of_nodes()):
+        if idx <= 1:
+            dotFile.write('"' + str(idx) + '" [shape=circle, style=filled, fillcolor=blue]' )
+        elif graph.nodes()[idx]['isProblemNode'] == 1:
+            dotFile.write('"' + str(idx) + '" [shape=diamond, style=filled, fillcolor=red]' )
     dotFile.write("}")
     dotFile.close()
 
@@ -237,20 +240,20 @@ detectProblemNodes(compGraph)
 detectProblemNodes(resGraph)
 
 ## should output a list of edges for each transcript and for the truth, how many transcripts have no path
-
-if  len( sys.argv ) > 2 :
-    printGraphDatatable( origGraph , sys.argv[2] + "_or" )
-    printGraphDatatable( compGraph , sys.argv[2] + "_co" )
-    printGraphDatatable( resGraph , sys.argv[2] + "_re" )
-else:
-    printGraphDatatable( origGraph , "origGraph" )
-    printGraphDatatable( compGraph , "compGraph" )
-    printGraphDatatable( resGraph , "resGraph" )
     
-
+graphIndex=""
 for idx in range(0,len(sys.argv)-1):
     if sys.argv[idx] == "-dot":
-        createDotFile(compGraph, sys.argv[idx+1])
+        createDotFile(origGraph, sys.argv[idx+1] +  "_orig.dot")
+        createDotFile(compGraph,  sys.argv[idx+1]  +  "_comp.dot")
+        createDotFile(resGraph,  sys.argv[idx+1]  +  "_res.dot")
+    if sys.argv[idx] == "-index":
+        graphIndex = sys.argv[idx+1]
+        
+        
+printGraphDatatable( origGraph , graphIndex + "orig" )
+printGraphDatatable( compGraph , graphIndex + "comp" )
+printGraphDatatable( resGraph , graphIndex + "res" )
         
 
 #print "Edgelist of original graph"
