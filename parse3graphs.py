@@ -22,7 +22,7 @@ def getGraph():
             f.readline()
             break;
         nodecount = int(line) + 1
-        graph.add_nodes_from(range(0, nodecount), isChimearNode=0)
+        graph.add_nodes_from(range(0, nodecount), isChimearNode=0, isProblemNode=0)
 
     while True:
         raw = f.readline().strip()
@@ -41,24 +41,23 @@ def getGraph():
             #w.write(str(i)+"\t"+str(el[3][1:])+"\n")
             #print el[0],"->",el[1], '[label="', "S"+str(i), el[6] ,'"];';
             graph.add_edge( int( el[0] ) , int( el[1] ), type=1, label=el[2], binExon=el[3][1:], Flow=int( el[6]) )
+    #delete nodes without edges:
+    graph.remove_nodes_from([u for u,v in graph.degree() if v==0 ])
     return graph
 def detectProblemNodes(graph):
-    inDegree = [b for (a,b) in list(graph.in_degree())]
-    outDegree = [b for (a,b) in list(graph.out_degree())]
-    problemNodes = [ 1*( a > 1 )*( b > 1 ) for a,b in zip( inDegree , outDegree ) ]
-    for idx, isProblemNode in enumerate(problemNodes):
-        graph.nodes()[idx]['isProblemNode']=isProblemNode
+    for v in graph.nodes():
+        graph.nodes()[v]['isProblemNode'] = 1*( graph.in_degree()[v] > 1 )*( graph.out_degree()[v]  > 1 )
 
-def printGraphDatatable( graph , name ):
+def printGraphDatatable( graph , name, graphKind):
     inDegree = [b for (a,b) in list(graph.in_degree())]
     outDegree = [b for (a,b) in list(graph.out_degree())]
     problemNodes=get_node_attributes(graph,'isProblemNode')
     chimearNodes=get_node_attributes(graph,'isChimearNode')
-    centrality=degree_centrality(graph).values()
+    centrality=degree_centrality(graph)
     #GraphId, VertexCount, Vertex_ID, In_Degree, Out_Degree, ProblemNode?, ChimearNode?, Centrality
-    for i in range( 0 , graph.number_of_nodes() ):
-        print name + "\t" + str( graph.number_of_nodes() ) + "\t" + str(i) + "\t" + str( inDegree[i] ) + "\t" + str( outDegree[i] ) + "\t" + str( problemNodes[i] ) + "\t" + str( chimearNodes[i] ) + "\t" + str( centrality[i] )
-        #print("")
+    for v in graph.nodes():
+        #if graph.degree()[i]>0:
+        print name + "\t" + graphKind + "\t" + str( graph.number_of_nodes() ) + "\t" + str(v) + "\t" + str( graph.in_degree[v] ) + "\t" + str( graph.out_degree[v] ) + "\t" + str( problemNodes[v] ) + "\t" + str( chimearNodes[v] ) + "\t" + str( centrality[v] )
     return
 
 def createDotFile(graph, path):
@@ -274,9 +273,9 @@ for idx in range(0,len(sys.argv)-1):
         graphIndex = sys.argv[idx+1]
 
 
-printGraphDatatable( origGraph , graphIndex + "orig" )
-printGraphDatatable( compGraph , graphIndex + "comp" )
-printGraphDatatable( resGraph , graphIndex + "res" )
+printGraphDatatable( origGraph , graphIndex, "orig" )
+printGraphDatatable( compGraph , graphIndex, "comp" )
+printGraphDatatable( resGraph , graphIndex, "res" )
 
 
 #print "Edgelist of original graph"
