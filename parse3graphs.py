@@ -137,17 +137,19 @@ for (startnode , endnode , key ) in list( resGraph.edges( keys = True ) ) :
     # collect the edges of the resolved splicegraph
     spliceEdges.append( [ splicePosShort , [ startnode , endnode, resGraph[startnode][endnode][key]['label'], 0 ] ] )
 # function to get the initial nodes that correspond to problemnodes in the final graph
-def matchResolvedEdge(startnode,resEdge,origEdge):
-    for (startnode , endnode , key ) in list( origGraph.edges( keys = True ) ) :
-        # add new exons to the edge we construct
-        this_edge = [ a | b for a,b in zip(origEdge,origGraph[ startnode ] [ endnode ][ key ] [ 'binExon' ] ) ]
-        # check if the strings match up to the last 1 in this_edge
-        if [ a ^ b for a,b in zip(resEdge,this_edge)].index(1) > len(this_edge) -this_edge[::-1].index(1):
-            if we are at the end node of resEdge:
-                if we are at node 0 fine
-                else  iterate until we are at node 0
-            
 
+#def matchResolvedEdge(startnode,resEdge,origEdge):
+#    for (startnode , endnode , key ) in list( origGraph.edges( keys = True ) ) :
+#        # add new exons to the edge we construct
+#        this_edge = [ a | b for a,b in zip(origEdge,origGraph[ startnode ] [ endnode ][ key ] [ 'binExon' ] ) ]
+#        # check if the strings match up to the last 1 in this_edge
+#        if [ a ^ b for a,b in zip(resEdge,this_edge)].index(1) > len(this_edge) -this_edge[::-1].index(1):
+#            if we are at the end node of resEdge:
+#                if we are at node 0 fine
+#                else  iterate until we are at node 0
+
+for (startnode , endnode , key ) in list( resGraph.edges( keys = True ) ) :
+    matchResolvedEdges(
 
 ## should output a list of edges for each transcript and for the truth, how many transcripts have no path
 def checktranscript( transcript ,transcriptPosition, graph , startnode , truePathVar ) :
