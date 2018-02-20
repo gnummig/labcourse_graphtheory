@@ -148,8 +148,8 @@ for (startnode , endnode , key ) in list( resGraph.edges( keys = True ) ) :
 #                if we are at node 0 fine
 #                else  iterate until we are at node 0
 
-for (startnode , endnode , key ) in list( resGraph.edges( keys = True ) ) :
-    matchResolvedEdges(
+#for (startnode , endnode , key ) in list( resGraph.edges( keys = True ) ) :
+#    matchResolvedEdges(
 
 ## should output a list of edges for each transcript and for the truth, how many transcripts have no path
 def checktranscript( transcript ,transcriptPosition, graph , startnode , truePathVar ) :
@@ -230,26 +230,27 @@ def getChimaerNodes(transcriptPath , position):
 
 truePaths = getTranscripPath( trueExonPos , 1 )
 transcriptPaths = getTranscripPath( transcriptExonPos, 0  )
-print "true paths  through the graph"
-print   truePaths
-print "transcript paths that go only through edges of the graph that are used by truth"
-print   transcriptPaths
+#print "true paths  through the graph"
+#print   truePaths
+#print "transcript paths that go only through edges of the graph that are used by truth"
+#print   transcriptPaths
 chimaerNodesNested=[]
 for idx,path in enumerate(transcriptPaths):
     if path and path in truePaths:
-        print "correct transcript:"
-        print path
+        #print "correct transcript:"
+        #print path
+        continue;
     elif path:
-        print "chimaer transcript:"
-        print path
+        #print "chimaer transcript:"
+        #print path
         chimaerNodesNested.append(getChimaerNodes(path , 0))
-        print "the responsible nodes are:"
+        #print "the responsible nodes are:"
         # double flatten the list and remove duplicates by back and forth transforming to a set
         chimaerNodes = list(set([ node for sublist in chimaerNodesNested for subsublist in sublist for  node in subsublist] ) )
-        print chimaerNodes
+        #print chimaerNodes
     else:
-        print "incorrect transcript"
-        print trueExonPos[idx]
+        #print "incorrect transcript"
+        #print trueExonPos[idx]
 
 
 detectProblemNodes(origGraph)
