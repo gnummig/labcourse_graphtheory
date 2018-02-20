@@ -254,8 +254,8 @@ detectProblemNodes(origGraph)
 detectProblemNodes(compGraph)
 detectProblemNodes(resGraph)
 
+
 ## should output a list of edges for each transcript and for the truth, how many transcripts have no path
-    
 graphIndex=""
 for idx in range(0,len(sys.argv)-1):
     if sys.argv[idx] == "-dot":
@@ -264,12 +264,12 @@ for idx in range(0,len(sys.argv)-1):
         createDotFile(resGraph,  sys.argv[idx+1]  +  "_res.dot")
     if sys.argv[idx] == "-index":
         graphIndex = sys.argv[idx+1]
-        
-        
+
+
 printGraphDatatable( origGraph , graphIndex + "orig" )
 printGraphDatatable( compGraph , graphIndex + "comp" )
 printGraphDatatable( resGraph , graphIndex + "res" )
-        
+
 
 #print "Edgelist of original graph"
 #print origGraph.get_edgelist()
