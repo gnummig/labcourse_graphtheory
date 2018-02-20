@@ -31,23 +31,24 @@ def getGraph():
             break;
         el = raw.split()
         if  el[5]=="4":
-            graph.add_edge( int( el[0] ) , int( el[1] ), type=4, label=el[2], Flow=0 )
+            Exon = bin( 0 )[ 2: ].zfill( len( exonPos ) )
+            graph.add_edge( int( el[0] ) , int( el[1] ), type=4, label=el[2], binExon = Exon, Flow=0 )
         elif el[5]=="2":
-            graph.add_edge( int( el[0] ) , int( el[1] ), type=2, label=el[2], Exon=el[3][1:], Flow=int( el[6]) )
+            Exon = bin( int( el[4][:-1] ) )[2:].zfill( len( exonPos ) )
+            graph.add_edge( int( el[0] ) , int( el[1] ), type=2, label=el[2], binExon = Exon, Flow=int( el[6]) )
             # todo does this work???
         else:
             #w.write(str(i)+"\t"+str(el[3][1:])+"\n")
             #print el[0],"->",el[1], '[label="', "S"+str(i), el[6] ,'"];';
             graph.add_edge( int( el[0] ) , int( el[1] ), type=1, label=el[2], binExon=el[3][1:], Flow=int( el[6]) )
     return graph
-
 def detectProblemNodes(graph):
     inDegree = [b for (a,b) in list(graph.in_degree())]
     outDegree = [b for (a,b) in list(graph.out_degree())]
     problemNodes = [ 1*( a > 1 )*( b > 1 ) for a,b in zip( inDegree , outDegree ) ]
     for idx, isProblemNode in enumerate(problemNodes):
         graph.node[idx]['isProblemNode']=isProblemNode
-    
+
 def printGraphDatatable( graph , name ):
     inDegree = [b for (a,b) in list(graph.in_degree())]
     outDegree = [b for (a,b) in list(graph.out_degree())]
@@ -72,30 +73,6 @@ def createDotFile(graph, path):
     dotFile.write("}")
     dotFile.close()
 
-##########
-#  main  #
-##########
-
-
-f = open( sys.argv[1] , 'r')
-# remove first line, after that the exon list followx
-f.readline().strip()
-exonPos = []
-while True:
-    line = f.readline().strip()
-    if not line:
-        break;
-    if "Bins" in line:
-        break;
-    exonPos.append( [ int( line.split(" ")[1].split("-")[0] ) , int( line.split(" ")[1].split("-")[1] ) ] )
-
-
-
-origGraph = getGraph()
-compGraph = getGraph()
-resGraph = getGraph()
-
-# get the transcripts
 def getTranscripts( filename ):
     transcripts = open( os.path.dirname( sys.argv[1]) + filename , 'r')
     # structure of exonPos is a list with sublists [ [ exonpositions ] , FPKM ]
@@ -113,13 +90,37 @@ def getTranscripts( filename ):
         ExonPos[ transcriptcount ][0].append( int( line.split()[4] ) )
         ExonPos[ transcriptcount ][0].sort()
     return ExonPos
+
+##########
+#  main  #
+##########
+# chr2_0.graph
+
+f = open( sys.argv[1] , 'r')
+# remove first line, after that the exon list followx
+f.readline().strip()
+exonPos = []
+while True:
+    line = f.readline().strip()
+    if not line:
+        break;
+    if "Bins" in line:
+        break;
+    exonPos.append( [ int( line.split(" ")[1].split("-")[0] ) , int( line.split(" ")[1].split("-")[1] ) ] )
+
+
+origGraph = getGraph()
+compGraph = getGraph()
+resGraph = getGraph()
+
+# get the transcripts that are there and that have been found
 transcriptExonPos = getTranscripts( "/transcripts.gtf" )
 trueExonPos = getTranscripts( "/../truth.gtf" )
-# todo neeed to flatten that list.
-# translate the binary exon representation into actual exon posiions
+
+# translate the binary exon representation of the resolved graph into actual exon posiions
 spliceEdges = []
-for (startnode, endnode , key) in list(resGraph.edges(keys=True)) :
-    binex=resGraph[startnode][endnode][key]['binExon']
+for (startnode , endnode , key ) in list( resGraph.edges( keys = True ) ) :
+    binex=resGraph[ startnode ] [ endnode ][ key ] [ 'binExon' ]
     #indeces of the exons on the path
     indices = [ b for a,b in zip( binex , range( 0 , len( binex ))) if int( a ) > 0 ]
     # [exonpos start,exonpos end]
@@ -132,7 +133,20 @@ for (startnode, endnode , key) in list(resGraph.edges(keys=True)) :
     splicePosShort.sort()
     # collect the edges of the resolved splicegraph
     spliceEdges.append( [ splicePosShort , [ startnode , endnode, resGraph[startnode][endnode][key]['label'], 0 ] ] )
+# function to get the initial nodes that correspond to problemnodes in the final graph
+def matchResolvedEdge(startnode,resEdge,origEdge):
+    for (startnode , endnode , key ) in list( origGraph.edges( keys = True ) ) :
+        # add new exons to the edge we construct
+        this_edge = [ a | b for a,b in zip(origEdge,origGraph[ startnode ] [ endnode ][ key ] [ 'binExon' ] ) ]
+        # check if the strings match up to the last 1 in this_edge
+        if [ a ^ b for a,b in zip(resEdge,this_edge)].index(1) > len(this_edge) -this_edge[::-1].index(1):
+            if we are at the end node of resEdge:
+                if we are at node 0 fine
+                else  iterate until we are at node 0
+            
 
+
+## should output a list of edges for each transcript and for the truth, how many transcripts have no path
 def checktranscript( transcript ,transcriptPosition, graph , startnode , truePathVar ) :
     # if in the true trpts, take all paths, and mark used ones, if in the transpts, take only marked paths
     edgeset = [ edge for edge in  graph if edge[1][0] == startnode and ( edge[1][3] or truePathVar )  ]
@@ -177,13 +191,14 @@ def checktranscript( transcript ,transcriptPosition, graph , startnode , truePat
     # there were no edges so this we wont get anywhere from here
     return False
 
+#basically just a function to parse transcripts to the  checktranscript function
 def getTranscripPath( transcripts , truePathVar ):
     paths = []
     for transcript in transcripts:
         paths.append( checktranscript( transcript , 0 , spliceEdges , 0 , truePathVar ) )
     return paths
 
-# takes a transcript path that is known to be chimaer, and a position from which ti start searching
+# takes a transcript path that is known to be chimaer, and a position from which to start searching
 def getChimaerNodes(transcriptPath , position):
     maxhops=0
     for truePath in truePaths:
@@ -236,7 +251,6 @@ detectProblemNodes(origGraph)
 detectProblemNodes(compGraph)
 detectProblemNodes(resGraph)
 
-## should output a list of edges for each transcript and for the truth, how many transcripts have no path
 
 if  len( sys.argv ) > 2 :
     printGraphDatatable( origGraph , sys.argv[2] + "_or" )
@@ -246,12 +260,12 @@ else:
     printGraphDatatable( origGraph , "origGraph" )
     printGraphDatatable( compGraph , "compGraph" )
     printGraphDatatable( resGraph , "resGraph" )
-    
+
 
 for idx in range(0,len(sys.argv)-1):
     if sys.argv[idx] == "-dot":
         createDotFile(compGraph, sys.argv[idx+1])
-        
+
 
 #print "Edgelist of original graph"
 #print origGraph.get_edgelist()
