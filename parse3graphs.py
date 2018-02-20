@@ -21,8 +21,8 @@ def getGraph():
         if line == "@arcs":
             f.readline()
             break;
-        nodecount = int(line)
-        graph.add_nodes_from(range(0, nodecount))
+        nodecount = int(line) + 1
+        graph.add_nodes_from(range(0, nodecount), isChimearNode=0)
 
     while True:
         raw = f.readline().strip()
@@ -47,16 +47,17 @@ def detectProblemNodes(graph):
     outDegree = [b for (a,b) in list(graph.out_degree())]
     problemNodes = [ 1*( a > 1 )*( b > 1 ) for a,b in zip( inDegree , outDegree ) ]
     for idx, isProblemNode in enumerate(problemNodes):
-        graph.node[idx]['isProblemNode']=isProblemNode
+        graph.nodes()[idx]['isProblemNode']=isProblemNode
 
 def printGraphDatatable( graph , name ):
     inDegree = [b for (a,b) in list(graph.in_degree())]
     outDegree = [b for (a,b) in list(graph.out_degree())]
     problemNodes=get_node_attributes(graph,'isProblemNode')
+    chimearNodes=get_node_attributes(graph,'isChimearNode')
     centrality=degree_centrality(graph).values()
-    #GraphId, VertexCount, Vertex_ID, In_Degree, Out_Degree, ProblemNode?, Centrality
+    #GraphId, VertexCount, Vertex_ID, In_Degree, Out_Degree, ProblemNode?, ChimearNode?, Centrality
     for i in range( 0 , graph.number_of_nodes() ):
-        print name +"\t"+ str( graph.number_of_nodes() ) + "\t" + str(i) + "\t" + str( inDegree[i] ) + "\t" + str( outDegree[i] ) + "\t" + str( problemNodes[i] ) + "\t" + str( centrality[i] )
+        print name + "\t" + str( graph.number_of_nodes() ) + "\t" + str(i) + "\t" + str( inDegree[i] ) + "\t" + str( outDegree[i] ) + "\t" + str( problemNodes[i] ) + "\t" + str( chimearNodes[i] ) + "\t" + str( centrality[i] )
         #print("")
     return
 
@@ -71,8 +72,10 @@ def createDotFile(graph, path):
     for idx  in range(0,graph.number_of_nodes()):
         if idx <= 1:
             dotFile.write('"' + str(idx) + '" [shape=circle, style=filled, fillcolor=blue]' )
-        elif graph.nodes()[idx]['isProblemNode'] == 1:
+        elif graph.nodes()[idx]['isChimearNode'] > 0:
             dotFile.write('"' + str(idx) + '" [shape=diamond, style=filled, fillcolor=red]' )
+        elif graph.nodes()[idx]['isProblemNode'] == 1:
+            dotFile.write('"' + str(idx) + '" [shape=diamond, style=filled, fillcolor=orange]' )
     dotFile.write("}")
     dotFile.close()
 
@@ -247,8 +250,10 @@ for idx,path in enumerate(transcriptPaths):
         #print "the responsible nodes are:"
         # double flatten the list and remove duplicates by back and forth transforming to a set
         chimaerNodes = list(set([ node for sublist in chimaerNodesNested for subsublist in sublist for  node in subsublist] ) )
+        for v in chimaerNodes:
+            resGraph.nodes()[v]['isChimearNode']=resGraph.nodes()[v]['isChimearNode']+1
         #print chimaerNodes
-    else:
+    #else:
         #print "incorrect transcript"
         #print trueExonPos[idx]
 
