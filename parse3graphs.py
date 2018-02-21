@@ -204,36 +204,47 @@ def getTranscripPath( transcripts , truePathVar ):
     return paths
 
 # takes a transcript path that is known to be chimaer, and a position from which to start searching
-def getChimaerNodes(transcriptPath , position):
-    maxhops=0
-    for truePath in truePaths:
-        thispath=True
-        if truePath:
-            for idx,edge in enumerate(truePath[position:]):
-                # search for the longest path you can go in one transcript from "position"
-                if edge in transcriptPath:
-                    maxhops = max(maxhops,idx+1)
-                else:
-                    break;
-    # maxindex should now contain the maximum number of edges walked in one piece
-    position = position + maxhops
-    # if that does not take us to the end, iterate!
-    if  position  != len(transcriptPath):
-       chimaernodes = getChimaerNodes(transcriptPath, position)
-       # find the end node of the last edge that matched, that is going to be the responsible one
-       chimaernodes.append( [v for (u,v,c) in list(resGraph.edges(keys=True)) if resGraph[u][v][c]['label'] == transcriptPath [ maxhops ] ] )
-    # if it is the end initialixe the list
-    else:
-        return []
-    return chimaernodes
+def getChimaerNodes(chimaerPath ):
+#tuple [truepath just walked, chimaer nodes] 
+    chimaerwalk = [ [ -1 , [] ] ]
+    for edge in chimaerPath :
+        justwalked = []
+        for true_path_num , truePath in enumerate(truePaths):
+            # for every truepath that we can go calclute the best paths 
+            if edge in truePath:
+                possibletrue = []
+                # construct list of transitions from  oldpaths to this truePath
+                for  [oldpath,nodeslist] in chimaerwalk :
+                    if ( oldpath == true_path_num ) or ( oldpath == -1 ) :
+                        possibletrue.append( [ true_path_num , nodeslist ] )
+                    else:
+                        # get the node that the chimaer edge came from (in reverse)
+                        [new_cnode] =  [ v for (u,v,c) in list(resGraph.edges(keys=True)) if resGraph[u][v][c]['label'] == edge ]
+                        newnodeslist =  list(nodeslist)
+                        newnodeslist.append(new_cnode)
+                        possibletrue.append( [true_path_num , newnodeslist] )
+                bestscore = min( [ len(bb) for [aa,bb] in possibletrue ] )
+                # from all combinations that end on this truepath take those with minimal cost
+                for [d,e] in possibletrue:
+                    if len(e) == bestscore:
+                        justwalked.append( [d,e] )
+        chimaerwalk = list(justwalked)
+    final = []
+    bestscore = min( [ len(b) for [a,b] in chimaerwalk ] )
+    for [ a , b ] in chimaerwalk :
+        if len( b ) == bestscore :
+            final.append( b )
+    return final
+
 
 
 truePaths = getTranscripPath( trueExonPos , 1 )
+truePaths = [path for path in truePaths if path]
 transcriptPaths = getTranscripPath( transcriptExonPos, 0  )
-#print "true paths  through the graph"
-#print   truePaths
-#print "transcript paths that go only through edges of the graph that are used by truth"
-#print   transcriptPaths
+print "true paths  through the graph"
+print   truePaths
+print "transcript paths that go only through edges of the graph that are used by truth"
+print   transcriptPaths
 chimaerNodesNested=[]
 for idx,path in enumerate(transcriptPaths):
     if path and path in truePaths:
@@ -241,16 +252,14 @@ for idx,path in enumerate(transcriptPaths):
         #print path
         continue;
     elif path:
-        #print "chimaer transcript:"
-        #print path
-        chimaerNodesNested.append(getChimaerNodes(path , 0))
-        #print "the responsible nodes are:"
+        print "chimaer transcript:"
+        print path
+        chimaerNodesNested.append(getChimaerNodes(path))
+        print chimaerNodesNested
+        print "the responsible nodes are:"
         # double flatten the list and remove duplicates by back and forth transforming to a set
         chimaerNodes = list(set([ node for sublist in chimaerNodesNested for subsublist in sublist for  node in subsublist] ) )
-        #print chimaerNodes
-    else:
-        #print "incorrect transcript"
-        #print trueExonPos[idx]
+        print chimaerNodes
 
 
 detectProblemNodes(origGraph)
