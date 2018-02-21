@@ -2,6 +2,7 @@
 
 import sys
 from  networkx import *
+import numpy
 import re
 import os
 
@@ -44,9 +45,23 @@ def getGraph():
     #delete nodes without edges:
     graph.remove_nodes_from([u for u,v in graph.degree() if v==0 ])
     return graph
-def detectProblemNodes(graph):
+
+def computeGraphAttributes(graph):
     for v in graph.nodes():
         graph.nodes()[v]['isProblemNode'] = 1*( graph.in_degree()[v] > 1 )*( graph.out_degree()[v]  > 1 )
+        outFlows=[f for u1, u2, f in graph.out_edges(v, data='Flow')]
+        inFlows=[f for u1, u2, f in graph.in_edges(v, data='Flow')]
+        graph.nodes()[v]['inFlow'] = sum(inFlows)
+        graph.nodes()[v]['outFlow'] = sum(outFlows)
+        if inFlows:
+            graph.nodes()[v]['inFlowStd'] = numpy.std(inFlows)
+        else:
+            graph.nodes()[v]['inFlowStd'] = "NA"
+        if outFlows:
+            graph.nodes()[v]['outFlowStd'] = numpy.std(outFlows)
+        else:
+            graph.nodes()[v]['outFlowStd'] = "NA"
+
 
 def printGraphDatatable( graph , name, graphKind):
     inDegree = [b for (a,b) in list(graph.in_degree())]
@@ -54,10 +69,13 @@ def printGraphDatatable( graph , name, graphKind):
     problemNodes=get_node_attributes(graph,'isProblemNode')
     chimearNodes=get_node_attributes(graph,'isChimearNode')
     centrality=degree_centrality(graph)
-    #GraphId, VertexCount, Vertex_ID, In_Degree, Out_Degree, ProblemNode?, ChimearNode?, Centrality
+    inFlow = get_node_attributes(graph,'inFlow')
+    inFlowStd = get_node_attributes(graph,'inFlowStd')
+    outFlow = get_node_attributes(graph,'outFlow')
+    outFlowStd = get_node_attributes(graph,'outFlowStd')
+    #GraphId, GraphKind , VertexCount, VertexID, ProblemNode?, ChimearNode? , In_Degree, Out_Degree, In_Flow, In_Flow_Std, Out_Flow, Out_Flow_Std, Centrality
     for v in graph.nodes():
-        #if graph.degree()[i]>0:
-        print name + "\t" + graphKind + "\t" + str( graph.number_of_nodes() ) + "\t" + str(v) + "\t" + str( graph.in_degree[v] ) + "\t" + str( graph.out_degree[v] ) + "\t" + str( problemNodes[v] ) + "\t" + str( chimearNodes[v] ) + "\t" + str( centrality[v] )
+        print name + "\t" + graphKind + "\t" + str( graph.number_of_nodes() ) + "\t" + str(v) +"\t" + str( problemNodes[v] ) + "\t" + str( chimearNodes[v] ) + "\t" + str( graph.in_degree[v] ) + "\t" + str( graph.out_degree[v] ) + "\t"  + str(inFlow[v]) + "\t"  + str(inFlowStd[v]) + "\t"  + str(outFlow[v]) + "\t"  + str(outFlowStd[v]) + "\t" + str( centrality[v] )
     return
 
 def createDotFile(graph, path):
@@ -243,10 +261,10 @@ def getChimaerNodes(chimaerPath ):
 truePaths = getTranscripPath( trueExonPos , 1 )
 truePaths = [path for path in truePaths if path]
 transcriptPaths = getTranscripPath( transcriptExonPos, 0  )
-print "true paths  through the graph"
-print   truePaths
-print "transcript paths that go only through edges of the graph that are used by truth"
-print   transcriptPaths
+#print "true paths  through the graph"
+#print   truePaths
+#print "transcript paths that go only through edges of the graph that are used by truth"
+#print   transcriptPaths
 chimaerNodesNested=[]
 for idx,path in enumerate(transcriptPaths):
     if path and path in truePaths:
@@ -254,11 +272,11 @@ for idx,path in enumerate(transcriptPaths):
         #print path
         continue;
     elif path:
-        print "chimaer transcript:"
-        print path
+        #print "chimaer transcript:"
+        #print path
         chimaerNodesNested.append(getChimaerNodes(path))
-        print chimaerNodesNested
-        print "the responsible nodes are:"
+        #print chimaerNodesNested
+        #print "the responsible nodes are:"
         # double flatten the list and remove duplicates by back and forth transforming to a set
         chimaerNodes = list(set([ node for sublist in chimaerNodesNested for subsublist in sublist for  node in subsublist] ) )
         for v in chimaerNodes:
@@ -269,9 +287,9 @@ for idx,path in enumerate(transcriptPaths):
         #print trueExonPos[idx]
 
 
-detectProblemNodes(origGraph)
-detectProblemNodes(compGraph)
-detectProblemNodes(resGraph)
+computeGraphAttributes(origGraph)
+computeGraphAttributes(compGraph)
+computeGraphAttributes(resGraph)
 
 
 ## should output a list of edges for each transcript and for the truth, how many transcripts have no path
