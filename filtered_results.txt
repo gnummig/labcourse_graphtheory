@@ -1,4 +1,4 @@
-GraphID	GraphKind	VertexCount	Vertex_ID	In_Degree	Out_Degree	ProblemNode	Centrality
+GraphID	GraphKind	VertexCount	Vertex_ID	In_Degree	Out_Degree	ProblemNode	ChimearNode	Centrality
 0	orig	12	0	0	2	0	0	0.181818181818
 0	orig	12	1	1	0	0	0	0.0909090909091
 0	orig	12	2	1	1	0	0	0.181818181818
