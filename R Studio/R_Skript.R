@@ -1,5 +1,8 @@
-filtered_results <- read.delim("~/labcourse_graphtheory/filtered_results.txt")
-splice_results <- read.delim("~/labcourse_graphtheory/splice_results.txt")
+library("ggplot2")
+library("hexbin")
+
+filtered_results <- read.delim("filtered_results.txt")
+splice_results <- read.delim("splice_results.txt")
 
 fr = filtered_results
 fr["Flow_IOError"]=abs(fr["In_Flow"]-fr["Out_Flow"])
@@ -68,7 +71,39 @@ stat_orig_noChim_filt = sapply(orig[orig$ChimearNode==0,][c("In_Degree", "Out_De
 stat_orig_noChim_spl = sapply(orig_sp[orig_sp$ChimearNode==0,][c("In_Degree", "Out_Degree","In_Flow", "In_Flow_Std", "Out_Flow", "Out_Flow_Std", "Flow_IOError", "Centrality")], mean)
 
 
+#### plots ####
+my_plot <- ggplot() + 
+  geom_point(data=comp_problem, aes(x=In_Flow_Std,y=Out_Flow_Std)) +
+  geom_point(data=comp_chim, aes(x=In_Flow_Std,y=Out_Flow_Std),color='red') +
+  #theme(  axis.text=element_text(size=12), axis.title=element_text(size=14,face="bold")  ) +
+  ylab("CAI / CDS") + xlab("GC content (%) / CDS") +
+  geom_point(size=1.5) +
+  theme(  axis.text=element_text(size=12), axis.title=element_text(size=14,face="bold")  ) 
 
+
+print(my_plot)
+
+my_plot2 <- ggplot() + 
+  geom_point(data=orig[orig$ChimearNode==0,], aes(x=Centrality,y=Flow_IOError)) +
+  geom_point(data=orig[orig$ChimearNode==1,], aes(x=Centrality,y=Flow_IOError),color='red') +
+  #theme(  axis.text=element_text(size=12), axis.title=element_text(size=14,face="bold")  ) +
+  ylab("Flow IO/Error") + xlab("Degree Centrality") +
+  geom_point(size=1.5) +
+  theme(  axis.text=element_text(size=12), axis.title=element_text(size=14,face="bold")  ) 
+
+
+print(my_plot2)
+
+my_plot3 <- ggplot() + 
+  geom_point(data=orig[orig$ChimearNode==0,], aes(x=In_Flow+Out_Flow,y=In_Degree+Out_Degree)) +
+  geom_point(data=orig[orig$ChimearNode==1,], aes(x=In_Flow+Out_Flow,y=In_Degree+Out_Degree),color='red') +
+  #theme(  axis.text=element_text(size=12), axis.title=element_text(size=14,face="bold")  ) +
+  ylab("Flow IO/Error") + xlab("Degree Centrality") +
+  geom_point(size=1.5) +
+  theme(  axis.text=element_text(size=12), axis.title=element_text(size=14,face="bold")  ) 
+
+
+print(my_plot3)
 ###Ablage###
 
 mean(res[res$GraphID==0,res$In_Degree])
