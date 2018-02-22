@@ -251,7 +251,7 @@ def matchResolvedEdge( startnode , res_bin_edge , merged_bin_init_edge ) :
         if [ a ^ b for a,b in zip( res_edge , this_edge ) ].index( 1 ) > len( this_edge ) - this_edge[::-1].index(1):
             # go for the next edge, as this one was fine.
             if this_edge == res_edge :  # wonder if that is correct, ie whether both are just arrays, but they should
-                print, "that wonder worked, the edges matched"
+                # print, "that wonder worked, the edges matched"
                 # initialize for succesful backward recursion
                 origGraph.edges()[ ( startnode , endnode , key ) ] [ "inResolved" ] = 1
                 return True
@@ -263,17 +263,18 @@ def matchResolvedEdge( startnode , res_bin_edge , merged_bin_init_edge ) :
     return False
 
 #initialize new property " is in resolved" as false
-for (startnode , endnode , key ) in list( origGraph.edges( keys = True ) ) :
-    origGraph.edges()[ ( startnode , endnode , key ) ] [ "inResolved" ] = 0
+for (startnode , endnode , key ) in origGraph.edges( keys = True )  :
+    origGraph[startnode][endnode][key][ 'inResolved' ] = 0
 # initialize a binary 0 string of the length of the others
 # find all edges in initial graph that are compacte onto resolved ones, ie those who are not deleted, during resolvation
 for (res_startnode , res_endnode , res_key ) in list( resGraph.edges( keys = True ) ) :
     # we surely find the startnode in res in the initial graph, and thats were our path starts
-    matchResolvedEdges(res_startnode, (res_startnode , res_endnode , res_key),
-
+    #matchResolvedEdges(res_startnode, (res_startnode , res_endnode , res_key),
+    break;
 # mark initial nodes that are compacted NODES that are compacted onto resolved with the node they become
-for (startnode , endnode , key ) in [ (startnode , endnode , key ) for ( startnode , endnode , key ) in list( origGraph.edges( keys = True ) ) if  origGraph.edges()[ ( startnode , endnode , key ) ] [ "inResolved" ] == 1 ]:
-    
+#inresolved = [ v  for v in origGraph.edges( keys = True ) if  origGraph[ v ] [ "inResolved" ] == 1 ]
+#for v in inresolved:
+#    break;
 
 
 
