@@ -1,5 +1,6 @@
 library("ggplot2")
-library("hexbin")
+library("gridExtra")
+#library("hexbin")
 
 filtered_results <- read.delim("filtered_results.txt")
 splice_results <- read.delim("splice_results.txt")
@@ -20,6 +21,20 @@ for(i in 1:nrow(res)) {
   }
 }
 
+for(i in 1:nrow(comp)) {
+  row = comp[i,]
+  if (row["ProblemNode"]==1) {
+    orig[orig$GraphID==row$GraphID & orig$VertexID==row$VertexID ,]["ProblemNode"]=1
+  }
+}
+
+for(i in 1:nrow(res)) {
+  row = res[i,]
+  if (row["ProblemNode"]==1) {
+    orig[orig$GraphID==row$GraphID & orig$VertexID==row$VertexID ,]["ProblemNode"]=2
+  }
+}
+
 sr = splice_results
 sr["Flow_IOError"]=abs(sr["In_Flow"]-sr["Out_Flow"])
 sr[sr$VertexID<=1,]["Flow_IOError"]=0
@@ -33,6 +48,20 @@ for(i in 1:nrow(res_sp)) {
   if (row["ChimearNode"]==1) {
     orig_sp[orig_sp$GraphID==row$GraphID & orig_sp$VertexID==row$VertexID ,]["ChimearNode"]=1
     comp_sp[comp_sp$GraphID==row$GraphID & comp_sp$VertexID==row$VertexID ,]["ChimearNode"]=1
+  }
+}
+
+for(i in 1:nrow(comp_sp)) {
+  row = comp_sp[i,]
+  if (row["ProblemNode"]==1) {
+    orig_sp[orig_sp$GraphID==row$GraphID & orig_sp$VertexID==row$VertexID ,]["ProblemNode"]=1
+  }
+}
+
+for(i in 1:nrow(res)) {
+  row = res_sp[i,]
+  if (row["ProblemNode"]==1) {
+    orig_sp[orig_sp$GraphID==row$GraphID & orig_sp$VertexID==row$VertexID ,]["ProblemNode"]=2
   }
 }
 
@@ -94,14 +123,30 @@ my_plot2 <- ggplot() +
 
 print(my_plot2)
 
+#placeholder plot - prints nothing at all
+empty <- ggplot()+geom_point(aes(1,1), colour="white") +
+  theme(                              
+    plot.background = element_blank(), 
+    panel.grid.major = element_blank(), 
+    panel.grid.minor = element_blank(), 
+    panel.border = element_blank(), 
+    panel.background = element_blank(),
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank(),
+    axis.text.x = element_blank(),
+    axis.text.y = element_blank(),
+    axis.ticks = element_blank()
+  )
+
+#scatterplot of x and y variables
 my_plot3 <- ggplot() + 
-  geom_point(data=orig[orig$ChimearNode==0,], aes(x=In_Flow+Out_Flow,y=In_Degree+Out_Degree)) +
-  geom_point(data=orig[orig$ChimearNode==1,], aes(x=In_Flow+Out_Flow,y=In_Degree+Out_Degree),color='red') +
+  geom_point(data=orig[orig$ProblemNode==0,], aes(x=Centrality,y=Flow_IOError)) +
+  geom_point(data=orig[orig$ProblemNode==2,], aes(x=Centrality,y=Flow_IOError) , color='red') +
+  geom_point(data=orig[orig$ProblemNode==1,], aes(x=Centrality,y=Flow_IOError) , color='green') +
   #theme(  axis.text=element_text(size=12), axis.title=element_text(size=14,face="bold")  ) +
   ylab("Flow IO/Error") + xlab("Degree Centrality") +
   geom_point(size=1.5) +
   theme(  axis.text=element_text(size=12), axis.title=element_text(size=14,face="bold")  ) 
-
 
 print(my_plot3)
 ###Ablage###
