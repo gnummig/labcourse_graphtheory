@@ -1,0 +1,70 @@
+
+Johanna, Camill: Vergleich filtered, splice_graph fuer ER, STAR
+
+Sandra, Fei: Vergleich filtered, splice_graph fuer EP, STAR
+
+Anne-Sophie, Theresa: Vergleich filtered, splice_graph fuer ER, True
+
+Erik, Jan, Bastian: Vergleich STAR, TopHat und True fuer EP, filtered
+
+Daniel, Benjamin: Vergleich filtered, splice_graph fuer EP, True
+
+Kevin, Simon, Elias: Vergleich STAR, TopHat und True fuer ER, filtered
+
+Eric, Alex: Vergleich filtered, unfiltered fuer ER, STAR
+
+Falco, Jan: Vergleich filtered, unfiltered fuer ER, True
+
+Dustyr, Jichang, Ye: Vergleich filtered, unfiltered fuer ER, True
+
+Albert, Christoph: Vergleich filtered, unfiltered fuer EP, True
+
+Marie: Vergleich filtered, splice_graph fuer ER, True
+
+Akbar, Thilo: Vergleich filtered, splice_graph fuer ER, STAR
+
+A) Generelle Statistik:
+	
+- Berechne generelle Statistiken fuer die zugeordneten Graphen in Initial, je fuer:
+	a) normale Nodes
+	b) Problem-Nodes die nur in Compacted sind
+	c) Problem-Nodes in Resolved und Compacted
+
+- Vorschlaege fuer Statistiken:
+	- in und out-degree
+	- in und out-coverage
+	- Varianz in diesen
+	- Grenzen Source oder Drain an?
+	- Distanzen im Graph
+- Statistiken sollen variiert und auf Aussagekraft ueberprueft werden
+- eigene Statistiken sollen entwickelt und getestet werden
+
+- Berechne zusaetzlich Statistiken fuer die Gesamtgraphen:
+	- # Nodes (Gesamt, Problem-Nodes)
+	- # Kanten im laengsten Pfad
+	- etc.
+
+B) Statistik nach Wahrheitswert:
+
+- Kategorisiere Node-Typen b) und c) jeweils weiter nach:
+	i)	induziert ausschliesslich korrekte Transkripte
+	ii)	induziert korrekte Transkripte und Chimaeren 
+	iii)	induziert ausschliesslich Chimaeren
+(- falsche Transcripte koennen zusaetzlich erfasst werden)
+- fuer i)-iii) fuer je b) und c) sollen die Eigenschaften im Initial Graph separat erfasst werden
+- zusaetzlich ist die Verteilung der FPKM-Werte zwischen Chimaeren und wahren Transkripten fuer je b) und c) festzustellen
+
+C) Bonus:
+
+- Finde Regions, in denen die Graphen fuer den selben Locus (die selben Gene) maximal unterschiedlich sind.
+
+
+
+Hinweis: verwendet nohup um Jobs per Remote zu starten
+Bei Fragen: thomas@bioinf.uni-leipzig.de
+
+
+ 
+
+
+
