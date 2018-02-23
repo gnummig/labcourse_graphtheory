@@ -23,7 +23,7 @@ def getGraph():
             f.readline()
             break;
         nodecount = int(line) + 1
-        graph.add_nodes_from(range(0, nodecount), isChimearNode=0, isProblemNode=0)
+        graph.add_nodes_from(range(0, nodecount), isChimearNode=0,isCorrectNode=0, isProblemNode=0)
 
     while True:
         raw = f.readline().strip()
@@ -70,6 +70,7 @@ def printGraphDatatable( graph , name, graphKind):
     outDegree = [b for (a,b) in list(graph.out_degree())]
     problemNodes=get_node_attributes(graph,'isProblemNode')
     chimearNodes=get_node_attributes(graph,'isChimearNode')
+    correctNodes=get_node_attributes(graph,'isCorrectNode')
     centrality=degree_centrality(graph)
     inFlow = get_node_attributes(graph,'inFlow')
     inFlowStd = get_node_attributes(graph,'inFlowStd')
@@ -77,7 +78,7 @@ def printGraphDatatable( graph , name, graphKind):
     outFlowStd = get_node_attributes(graph,'outFlowStd')
     #GraphId, GraphKind , VertexCount, Edgecoount, longestPathlength,  VertexID, ProblemNode?, ChimearNode? , In_Degree, Out_Degree, In_Flow, In_Flow_Std, Out_Flow, Out_Flow_Std, Centrality
     for v in graph.nodes():
-        print name + "\t" + graphKind + "\t" + str( graph.number_of_nodes() ) + "\t" + str(graph.number_of_edges()) + "\t" + str(graph.graph["longest_path_length"]) + "\t" + str(v) +"\t" + str( problemNodes[v] ) + "\t" + str( chimearNodes[v] ) + "\t" + str( graph.in_degree[v] ) + "\t" + str( graph.out_degree[v] ) + "\t"  + str(inFlow[v]) + "\t"  + str(inFlowStd[v]) + "\t"  + str(outFlow[v]) + "\t"  + str(outFlowStd[v]) + "\t" + str( centrality[v] )
+        print name + "\t" + graphKind + "\t" + str( graph.number_of_nodes() ) + "\t" + str(graph.number_of_edges()) + "\t" + str(graph.graph["longest_path_length"]) + "\t" + str(v) +"\t" + str( problemNodes[v] ) + "\t" + str( chimearNodes[v] ) + "\t" +  str(correctNodes[v]) "\t" + str( graph.in_degree[v] ) + "\t" + str( graph.out_degree[v] ) + "\t"  + str(inFlow[v]) + "\t"  + str(inFlowStd[v]) + "\t"  + str(outFlow[v]) + "\t"  + str(outFlowStd[v]) + "\t" + str( centrality[v] )
     return
 
 def createDotFile(graph, path):
@@ -200,6 +201,7 @@ def getChimaerNodes(chimaerPath ):
         if len( b ) == bestscore :
             final.append( b )
     return final
+
 ##########
 #  main  #
 ##########
@@ -287,18 +289,20 @@ transcriptPaths = getTranscripPath( transcriptExonPos, 0  )
 #print "transcript paths that go only through edges of the graph that are used by truth"
 #print   transcriptPaths
 chimaerNodesNested=[]
+correctNodesNested=[]
 for idx,path in enumerate(transcriptPaths):
     if path and path in truePaths:
         #print "correct transcript:"
         #print path
+        correctNodesNested.append( getChimaerNodes(path) )
+        correctNodes = list(set([ node for sublist in correctNodesNested for subsublist in sublist for  node in subsublist] ) )
+        for v in correctNodes:
+            resGraph.nodes()[v]['isCorrectNode'] = resGraph.nodes()[v]['isCorrectNode']+1
         continue;
     elif path:
         #print "chimaer transcript:"
         #print path
         chimaerNodesNested.append(getChimaerNodes(path))
-        #print chimaerNodesNested
-        #print "the responsible nodes are:"
-        # double flatten the list and remove duplicates by back and forth transforming to a set
         chimaerNodes = list(set([ node for sublist in chimaerNodesNested for subsublist in sublist for  node in subsublist] ) )
         for v in chimaerNodes:
             resGraph.nodes()[v]['isChimearNode']=resGraph.nodes()[v]['isChimearNode']+1
