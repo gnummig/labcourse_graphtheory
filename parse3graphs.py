@@ -47,6 +47,7 @@ def getGraph():
     return graph
 
 def computeGraphAttributes(graph):
+    graph.graph['longest_path_length'] = len(dag_longest_path(graph))
     for v in graph.nodes():
         graph.nodes()[v]['isProblemNode'] = 1*( graph.in_degree()[v] > 1 )*( graph.out_degree()[v]  > 1 )
         outFlows=[f for u1, u2, f in graph.out_edges(v, data='Flow')]
@@ -55,6 +56,7 @@ def computeGraphAttributes(graph):
         graph.nodes()[v]['outFlow'] = sum(outFlows)
         if inFlows:
             graph.nodes()[v]['inFlowStd'] = numpy.std(inFlows)
+        # todo empty list is also true ?!?
         else:
             graph.nodes()[v]['inFlowStd'] = "NA"
         if outFlows:
@@ -73,9 +75,9 @@ def printGraphDatatable( graph , name, graphKind):
     inFlowStd = get_node_attributes(graph,'inFlowStd')
     outFlow = get_node_attributes(graph,'outFlow')
     outFlowStd = get_node_attributes(graph,'outFlowStd')
-    #GraphId, GraphKind , VertexCount, VertexID, ProblemNode?, ChimearNode? , In_Degree, Out_Degree, In_Flow, In_Flow_Std, Out_Flow, Out_Flow_Std, Centrality
+    #GraphId, GraphKind , VertexCount, Edgecoount, longestPathlength,  VertexID, ProblemNode?, ChimearNode? , In_Degree, Out_Degree, In_Flow, In_Flow_Std, Out_Flow, Out_Flow_Std, Centrality
     for v in graph.nodes():
-        print name + "\t" + graphKind + "\t" + str( graph.number_of_nodes() ) + "\t" + str(v) +"\t" + str( problemNodes[v] ) + "\t" + str( chimearNodes[v] ) + "\t" + str( graph.in_degree[v] ) + "\t" + str( graph.out_degree[v] ) + "\t"  + str(inFlow[v]) + "\t"  + str(inFlowStd[v]) + "\t"  + str(outFlow[v]) + "\t"  + str(outFlowStd[v]) + "\t" + str( centrality[v] )
+        print name + "\t" + graphKind + "\t" + str( graph.number_of_nodes() ) + "\t" + str(graph.number_of_edges()) + "\t" + str(graph.graph["longest_path_length"]) + "\t" + str(v) +"\t" + str( problemNodes[v] ) + "\t" + str( chimearNodes[v] ) + "\t" + str( graph.in_degree[v] ) + "\t" + str( graph.out_degree[v] ) + "\t"  + str(inFlow[v]) + "\t"  + str(inFlowStd[v]) + "\t"  + str(outFlow[v]) + "\t"  + str(outFlowStd[v]) + "\t" + str( centrality[v] )
     return
 
 def createDotFile(graph, path):
@@ -113,63 +115,6 @@ def getTranscripts( filename ):
         ExonPos[ transcriptcount ][0].append( int( line.split()[4] ) )
         ExonPos[ transcriptcount ][0].sort()
     return ExonPos
-
-##########
-#  main  #
-##########
-# chr2_0.graph
-
-f = open( sys.argv[1] , 'r')
-# remove first line, after that the exon list followx
-f.readline().strip()
-exonPos = []
-while True:
-    line = f.readline().strip()
-    if not line:
-        break;
-    if "Bins" in line:
-        break;
-    exonPos.append( [ int( line.split(" ")[1].split("-")[0] ) , int( line.split(" ")[1].split("-")[1] ) ] )
-
-
-origGraph = getGraph()
-compGraph = getGraph()
-resGraph = getGraph()
-
-# get the transcripts that are there and that have been found
-transcriptExonPos = getTranscripts( "/transcripts.gtf" )
-trueExonPos = getTranscripts( "/../truth.gtf" )
-
-# translate the binary exon representation of the resolved graph into actual exon posiions
-spliceEdges = []
-for (startnode , endnode , key ) in list( resGraph.edges( keys = True ) ) :
-    binex=resGraph[ startnode ] [ endnode ][ key ] [ 'binExon' ]
-    #indeces of the exons on the path
-    indices = [ b for a,b in zip( binex , range( 0 , len( binex ))) if int( a ) > 0 ]
-    # [exonpos start,exonpos end]
-    splicePosLong=[ b for a , b in zip( binex , exonPos ) if int( a ) > 0 ]
-    # flatten list
-    splicePosflat = [ int( item ) for sublist in splicePosLong for item in sublist ]
-    # merge neighboring exons
-    splicePosShort = [ a for a in splicePosflat if ( ( a + 1 ) not in splicePosflat ) & ( ( a - 1 ) not in splicePosflat ) ]
-    # sort the list, since sometimes the true tanscripts are reversed
-    splicePosShort.sort()
-    # collect the edges of the resolved splicegraph
-    spliceEdges.append( [ splicePosShort , [ startnode , endnode, resGraph[startnode][endnode][key]['label'], 0 ] ] )
-# function to get the initial nodes that correspond to problemnodes in the final graph
-
-#def matchResolvedEdge(startnode,resEdge,origEdge):
-#    for (startnode , endnode , key ) in list( origGraph.edges( keys = True ) ) :
-#        # add new exons to the edge we construct
-#        this_edge = [ a | b for a,b in zip(origEdge,origGraph[ startnode ] [ endnode ][ key ] [ 'binExon' ] ) ]
-#        # check if the strings match up to the last 1 in this_edge
-#        if [ a ^ b for a,b in zip(resEdge,this_edge)].index(1) > len(this_edge) -this_edge[::-1].index(1):
-#            if we are at the end node of resEdge:
-#                if we are at node 0 fine
-#                else  iterate until we are at node 0
-
-#for (startnode , endnode , key ) in list( resGraph.edges( keys = True ) ) :
-#    matchResolvedEdges(
 
 ## should output a list of edges for each transcript and for the truth, how many transcripts have no path
 def checktranscript( transcript ,transcriptPosition, graph , startnode , truePathVar ) :
@@ -255,6 +200,82 @@ def getChimaerNodes(chimaerPath ):
         if len( b ) == bestscore :
             final.append( b )
     return final
+##########
+#  main  #
+##########
+# chr2_0.graph
+
+f = open( sys.argv[1] , 'r')
+# remove first line, after that the exon list followx
+f.readline().strip()
+exonPos = []
+while True:
+    line = f.readline().strip()
+    if not line:
+        break;
+    if "Bins" in line:
+        break;
+    exonPos.append( [ int( line.split(" ")[1].split("-")[0] ) , int( line.split(" ")[1].split("-")[1] ) ] )
+
+
+origGraph = getGraph()
+compGraph = getGraph()
+resGraph = getGraph()
+
+# get the transcripts that are there and that have been found
+transcriptExonPos = getTranscripts( "/transcripts.gtf" )
+trueExonPos = getTranscripts( "/../truth.gtf" )
+
+# translate the binary exon representation of the resolved graph into actual exon posiions
+spliceEdges = []
+for (startnode , endnode , key ) in list( resGraph.edges( keys = True ) ) :
+    binex=resGraph[ startnode ] [ endnode ][ key ] [ 'binExon' ]
+    #indeces of the exons on the path
+    indices = [ b for a,b in zip( binex , range( 0 , len( binex ))) if int( a ) > 0 ]
+    # [exonpos start,exonpos end]
+    splicePosLong=[ b for a , b in zip( binex , exonPos ) if int( a ) > 0 ]
+    # flatten list
+    splicePosflat = [ int( item ) for sublist in splicePosLong for item in sublist ]
+    # merge neighboring exons
+    splicePosShort = [ a for a in splicePosflat if ( ( a + 1 ) not in splicePosflat ) & ( ( a - 1 ) not in splicePosflat ) ]
+    # sort the list, since sometimes the true tanscripts are reversed
+    splicePosShort.sort()
+    # collect the edges of the resolved splicegraph
+    spliceEdges.append( [ splicePosShort , [ startnode , endnode, resGraph[startnode][endnode][key]['label'], 0 ] ] )
+# function to get the initial nodes that correspond to problemnodes in the final graph
+
+def matchResolvedEdge( startnode , res_bin_edge , merged_bin_init_edge ) :
+    for (startnode , endnode , key ) in list( origGraph.edges( keys = True ) ) :
+        # add new exons to the edge we construct
+        this_edge = [ a | b for a,b in zip( merged_bin_init_edge , origGraph[ startnode ][ endnode ][ key ][ 'binExon' ] ) ]
+        # check if the strings match up to the last 1 in this_edge
+        if [ a ^ b for a,b in zip( res_edge , this_edge ) ].index( 1 ) > len( this_edge ) - this_edge[::-1].index(1):
+            # go for the next edge, as this one was fine.
+            if this_edge == res_edge :  # wonder if that is correct, ie whether both are just arrays, but they should
+                # print, "that wonder worked, the edges matched"
+                # initialize for succesful backward recursion
+                origGraph.edges()[ ( startnode , endnode , key ) ] [ "inResolved" ] = 1
+                return True
+            #if we are not at the end of resedge, keep going
+            result = matchResolvedEdge( endnote , res_edge , this_edge )
+            if result:
+                origGraph.edges()[ ( startnode , endnode , key ) ] [ "inResolved" ] = 1
+                return True
+    return False
+
+#initialize new property " is in resolved" as false
+for (startnode , endnode , key ) in origGraph.edges( keys = True )  :
+    origGraph[startnode][endnode][key][ 'inResolved' ] = 0
+# initialize a binary 0 string of the length of the others
+# find all edges in initial graph that are compacte onto resolved ones, ie those who are not deleted, during resolvation
+for (res_startnode , res_endnode , res_key ) in list( resGraph.edges( keys = True ) ) :
+    # we surely find the startnode in res in the initial graph, and thats were our path starts
+    #matchResolvedEdges(res_startnode, (res_startnode , res_endnode , res_key),
+    break;
+# mark initial nodes that are compacted NODES that are compacted onto resolved with the node they become
+inresolved = [ (startnode , endnode , key )  for (startnode , endnode , key ) in origGraph.edges( keys = True ) if  origGraph[ startnode][ endnode ][ key  ] [ "inResolved" ] == 1 ]
+for v in inresolved:
+    break;
 
 
 
