@@ -101,7 +101,25 @@ stat_orig_noChim_spl = sapply(orig_sp[orig_sp$ChimearNode==0,][c("In_Degree", "O
 
 
 #### plots ####
-my_plot <- ggplot() + 
+#version.labs <- c(`1`="Original Graph", `2`="Compacted Graph", `3`="Resolved Graph", `4`="Version 4.0", `5`="Version 5.0")
+my_box_plot <- ggplot(orig, aes(x=factor(ProblemNode), y=In_Degree+Out_Degree, fill=factor(ProblemNode)) ) +
+geom_jitter(position=position_jitter(width=0.3, height=0.2), aes(colour=factor(ProblemNode)), alpha=0.9) +
+geom_boxplot(alpha = 0.5, show.legend = FALSE) +
+#facet_grid(.~, labeller = as_labeller(version.labs)) +
+theme(strip.text.x = element_text(size=9, color="black", face="bold"))
+
+print(my_box_plot)
+
+#version.labs <- c(`1`="Original Graph", `2`="Compacted Graph", `3`="Resolved Graph", `4`="Version 4.0", `5`="Version 5.0")
+my_box_plot2 <- ggplot(fr, aes(x=factor(GraphKind), y=In_Flow+Out_Flow, fill=factor(GraphKind)) ) +
+geom_jitter(position=position_jitter(width=0.3, height=0.2), aes(colour=factor(GraphKind)), alpha=0.9) +
+geom_boxplot(alpha = 0.5, show.legend = FALSE) +
+#facet_grid(.~, labeller = as_labeller(version.labs)) +
+theme(strip.text.x = element_text(size=9, color="black", face="bold"))
+
+print(my_box_plot2)
+
+my_plot <- ggplot() +
   geom_point(data=comp_problem, aes(x=In_Flow_Std,y=Out_Flow_Std)) +
   geom_point(data=comp_chim, aes(x=In_Flow_Std,y=Out_Flow_Std),color='red') +
   #theme(  axis.text=element_text(size=12), axis.title=element_text(size=14,face="bold")  ) +
