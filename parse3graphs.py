@@ -47,6 +47,7 @@ def getGraph():
     return graph
 
 def computeGraphAttributes(graph):
+    graph.graph['longest_path_length'] = len(dag_longest_path(graph))
     for v in graph.nodes():
         graph.nodes()[v]['isProblemNode'] = 1*( graph.in_degree()[v] > 1 )*( graph.out_degree()[v]  > 1 )
         outFlows=[f for u1, u2, f in graph.out_edges(v, data='Flow')]
@@ -74,9 +75,9 @@ def printGraphDatatable( graph , name, graphKind):
     inFlowStd = get_node_attributes(graph,'inFlowStd')
     outFlow = get_node_attributes(graph,'outFlow')
     outFlowStd = get_node_attributes(graph,'outFlowStd')
-    #GraphId, GraphKind , VertexCount, VertexID, ProblemNode?, ChimearNode? , In_Degree, Out_Degree, In_Flow, In_Flow_Std, Out_Flow, Out_Flow_Std, Centrality
+    #GraphId, GraphKind , VertexCount, Edgecoount, longestPathlength,  VertexID, ProblemNode?, ChimearNode? , In_Degree, Out_Degree, In_Flow, In_Flow_Std, Out_Flow, Out_Flow_Std, Centrality
     for v in graph.nodes():
-        print name + "\t" + graphKind + "\t" + str( graph.number_of_nodes() ) + "\t" + str(v) +"\t" + str( problemNodes[v] ) + "\t" + str( chimearNodes[v] ) + "\t" + str( graph.in_degree[v] ) + "\t" + str( graph.out_degree[v] ) + "\t"  + str(inFlow[v]) + "\t"  + str(inFlowStd[v]) + "\t"  + str(outFlow[v]) + "\t"  + str(outFlowStd[v]) + "\t" + str( centrality[v] )
+        print name + "\t" + graphKind + "\t" + str( graph.number_of_nodes() ) + "\t" + str(graph.number_of_edges()) + "\t" + str(graph.graph["longest_path_length"]) + "\t" + str(v) +"\t" + str( problemNodes[v] ) + "\t" + str( chimearNodes[v] ) + "\t" + str( graph.in_degree[v] ) + "\t" + str( graph.out_degree[v] ) + "\t"  + str(inFlow[v]) + "\t"  + str(inFlowStd[v]) + "\t"  + str(outFlow[v]) + "\t"  + str(outFlowStd[v]) + "\t" + str( centrality[v] )
     return
 
 def createDotFile(graph, path):
@@ -272,9 +273,9 @@ for (res_startnode , res_endnode , res_key ) in list( resGraph.edges( keys = Tru
     #matchResolvedEdges(res_startnode, (res_startnode , res_endnode , res_key),
     break;
 # mark initial nodes that are compacted NODES that are compacted onto resolved with the node they become
-#inresolved = [ v  for v in origGraph.edges( keys = True ) if  origGraph[ v ] [ "inResolved" ] == 1 ]
-#for v in inresolved:
-#    break;
+inresolved = [ (startnode , endnode , key )  for (startnode , endnode , key ) in origGraph.edges( keys = True ) if  origGraph[ startnode][ endnode ][ key  ] [ "inResolved" ] == 1 ]
+for v in inresolved:
+    break;
 
 
 
