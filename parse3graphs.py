@@ -78,7 +78,7 @@ def printGraphDatatable( graph , name, graphKind):
     outFlowStd = get_node_attributes(graph,'outFlowStd')
     #GraphId, GraphKind , VertexCount, Edgecoount, longestPathlength,  VertexID, ProblemNode?, ChimearNode? , In_Degree, Out_Degree, In_Flow, In_Flow_Std, Out_Flow, Out_Flow_Std, Centrality
     for v in graph.nodes():
-        print name + "\t" + graphKind + "\t" + str( graph.number_of_nodes() ) + "\t" + str(graph.number_of_edges()) + "\t" + str(graph.graph["longest_path_length"]) + "\t" + str(v) +"\t" + str( problemNodes[v] ) + "\t" + str( chimearNodes[v] ) + "\t" +  str(correctNodes[v]) "\t" + str( graph.in_degree[v] ) + "\t" + str( graph.out_degree[v] ) + "\t"  + str(inFlow[v]) + "\t"  + str(inFlowStd[v]) + "\t"  + str(outFlow[v]) + "\t"  + str(outFlowStd[v]) + "\t" + str( centrality[v] )
+        print name + "\t" + graphKind + "\t" + str( graph.number_of_nodes() ) + "\t" + str(graph.number_of_edges()) + "\t" + str(graph.graph["longest_path_length"]) + "\t" + str(v) +"\t" + str( problemNodes[v] ) + "\t" + str( chimearNodes[v] ) + "\t" +  str(correctNodes[v]) + "\t" + str( graph.in_degree[v] ) + "\t" + str( graph.out_degree[v] ) + "\t"  + str(inFlow[v]) + "\t"  + str(inFlowStd[v]) + "\t"  + str(outFlow[v]) + "\t"  + str(outFlowStd[v]) + "\t" + str( centrality[v] )
     return
 
 def createDotFile(graph, path):
@@ -201,7 +201,36 @@ def getChimaerNodes(chimaerPath ):
         if len( b ) == bestscore :
             final.append( b )
     return final
-
+def getCorrectNodes(chimaerPath ):
+#tuple [truepath just walked, chimaer nodes] 
+    chimaerwalk = [ [ -1 , [] ] ]
+    for edge in chimaerPath :
+        justwalked = []
+        for true_path_num , truePath in enumerate(truePaths):
+            # for every truepath that we can go calclute the best paths 
+            if edge in truePath:
+                possibletrue = []
+                # construct list of transitions from  oldpaths to this truePath
+                for  [oldpath,nodeslist] in chimaerwalk :
+                    if ( oldpath == true_path_num ) or ( oldpath == -1 ) :
+                        print " wow the things matched"
+                        [new_cnode] =  [ u for (u,v,c) in list(resGraph.edges(keys=True)) if resGraph[u][v][c]['label'] == edge ]
+                        newnodeslist =  list(nodeslist)
+                        newnodeslist.append(new_cnode)
+                        possibletrue.append( [ true_path_num , nodeslist ] )
+                        print possibletrue
+                bestscore = min( [ len(bb) for [aa,bb] in possibletrue ] )
+                # from all combinations that end on this truepath take those with minimal cost
+                for [d,e] in possibletrue:
+                    if len(e) == bestscore:
+                        justwalked.append( [d,e] )
+        chimaerwalk = list(justwalked)
+    final = []
+    bestscore = min( [ len(b) for [a,b] in chimaerwalk ] )
+    for [ a , b ] in chimaerwalk :
+        if len( b ) == bestscore :
+            final.append( b )
+    return final
 ##########
 #  main  #
 ##########
@@ -292,16 +321,17 @@ chimaerNodesNested=[]
 correctNodesNested=[]
 for idx,path in enumerate(transcriptPaths):
     if path and path in truePaths:
-        #print "correct transcript:"
-        #print path
-        correctNodesNested.append( getChimaerNodes(path) )
-        correctNodes = list(set([ node for sublist in correctNodesNested for subsublist in sublist for  node in subsublist] ) )
-        for v in correctNodes:
-            resGraph.nodes()[v]['isCorrectNode'] = resGraph.nodes()[v]['isCorrectNode']+1
+#        print "correct transcript:"
+#        print path
+#        correctNodesNested.append( getCorrectNodes(path) )
+#        correctNodes = list(set([ node for sublist in correctNodesNested for subsublist in sublist for  node in subsublist] ) )
+#        for v in correctNodes:
+#            print "correct node written"
+#            resGraph.nodes()[v]['isCorrectNode'] = resGraph.nodes()[v]['isCorrectNode']+1
         continue;
     elif path:
-        #print "chimaer transcript:"
-        #print path
+        print "chimaer transcript:"
+        print path
         chimaerNodesNested.append(getChimaerNodes(path))
         chimaerNodes = list(set([ node for sublist in chimaerNodesNested for subsublist in sublist for  node in subsublist] ) )
         for v in chimaerNodes:

@@ -2,8 +2,8 @@ library("ggplot2")
 library("gridExtra")
 #library("hexbin")
 
-filtered_results <- read.delim("filtered_results.txt")
-splice_results <- read.delim("splice_results.txt")
+filtered_results <- read.delim("EP_True_filtered_results.txt")
+splice_results <- read.delim("EP_True_splice_graph_results.txt")
 
 fr = filtered_results
 fr["Flow_IOError"]=abs(fr["In_Flow"]-fr["Out_Flow"])
@@ -15,7 +15,7 @@ res = fr[fr$GraphKind =='res',]
 
 for(i in 1:nrow(res)) {
   row = res[i,]
-  if (row["ChimearNode"]==1) {
+  if (row["ChimearNode"]>0) {
     orig[orig$GraphID==row$GraphID & orig$VertexID==row$VertexID ,]["ChimearNode"]=1
     comp[comp$GraphID==row$GraphID & comp$VertexID==row$VertexID ,]["ChimearNode"]=1
   }
@@ -45,7 +45,7 @@ res_sp = sr[sr$GraphKind =='res',]
 
 for(i in 1:nrow(res_sp)) {
   row = res_sp[i,]
-  if (row["ChimearNode"]==1) {
+  if (row["ChimearNode"]>0) {
     orig_sp[orig_sp$GraphID==row$GraphID & orig_sp$VertexID==row$VertexID ,]["ChimearNode"]=1
     comp_sp[comp_sp$GraphID==row$GraphID & comp_sp$VertexID==row$VertexID ,]["ChimearNode"]=1
   }
@@ -139,16 +139,14 @@ empty <- ggplot()+geom_point(aes(1,1), colour="white") +
     axis.ticks = element_blank()
   )
 
-foo =  merge(orig[orig$ChimearNode==0,],orig[orig$ChimearNode==1,])
+mydata =  merge(orig[orig$ChimearNode==0,],orig[orig$ChimearNode==1,])
 
 #scatterplot of x and y variables
 scatter <- ggplot() + 
   geom_point(data=foo,
              aes(x=Centrality,y=Flow_IOError),
-             color=ChimearNode) +
-  geom_point(data=orig[orig$ChimearNode==1,],
-             aes(x=Centrality,y=Flow_IOError),
-             color='purple') +
+             color=foo$ChimearNode) +
+  scale_color_manual(values = c("orange", "purple")) +
   #theme(  axis.text=element_text(size=12), axis.title=element_text(size=14,face="bold")  ) +
   ylab("Flow IO-Difference") + xlab("Node Degree") +
   geom_point(size=1.5) +
