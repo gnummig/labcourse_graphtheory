@@ -122,6 +122,71 @@ my_plot2 <- ggplot() +
 
 
 print(my_plot2)
+#### scatter plot with density functions
+library(gridExtra)
+#placeholder plot - prints nothing at all
+empty <- ggplot()+geom_point(aes(1,1), colour="white") +
+  theme(                              
+    plot.background = element_blank(), 
+    panel.grid.major = element_blank(), 
+    panel.grid.minor = element_blank(), 
+    panel.border = element_blank(), 
+    panel.background = element_blank(),
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank(),
+    axis.text.x = element_blank(),
+    axis.text.y = element_blank(),
+    axis.ticks = element_blank()
+  )
+
+foo =  merge(orig[orig$ChimearNode==0,],orig[orig$ChimearNode==1,])
+
+#scatterplot of x and y variables
+scatter <- ggplot() + 
+  geom_point(data=foo,
+             aes(x=Centrality,y=Flow_IOError),
+             color=ChimearNode) +
+  geom_point(data=orig[orig$ChimearNode==1,],
+             aes(x=Centrality,y=Flow_IOError),
+             color='purple') +
+  #theme(  axis.text=element_text(size=12), axis.title=element_text(size=14,face="bold")  ) +
+  ylab("Flow IO-Difference") + xlab("Node Degree") +
+  geom_point(size=1.5) +
+  theme(legend.position=c(1,1),
+        legend.justification=c(1,1))
+      #  ,
+      #  axis.text=element_text(size=12), 
+      #  axis.title=element_text(size=14,face="bold") )
+ 
+#marginal density of x - plot on top
+plot_top <- ggplot() + 
+  geom_density(data=orig[orig$ChimearNode==0,],
+               aes(x=Centrality),fill="orange",alpha=.5) + 
+  geom_density(data=orig[orig$ChimearNode==1,],
+               aes(x=Centrality),fill="purple",alpha=.5) + 
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank(),
+        axis.text.y=element_text(colour="white")
+  )
+
+
+#marginal density of y - plot on the right
+plot_right <- ggplot() + 
+  geom_density(data=orig[orig$ChimearNode==0,],
+               aes(x=Flow_IOError),fill="orange",alpha=.5) + 
+  geom_density(data=orig[orig$ChimearNode==1,],
+               aes(x=Flow_IOError),fill="purple",alpha=.5) + 
+  coord_flip() + 
+  theme(axis.title.y=element_blank(),
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        axis.text.x=element_text(colour="white")
+        )
+
+
+#arrange the plots together, with appropriate height and width for each row and column
+grid.arrange(plot_top, empty, scatter, plot_right, ncol=2, nrow=2, widths=c(4, 1), heights=c(1, 4))
 
 #placeholder plot - prints nothing at all
 empty <- ggplot()+geom_point(aes(1,1), colour="white") +
