@@ -124,64 +124,71 @@ my_plot2 <- ggplot() +
 print(my_plot2)
 #### scatter plot with density functions
 library(gridExtra)
+gglegend <- function(x){ 
+  tmp <- ggplot_gtable(ggplot_build(x)) 
+  leg <- which(sapply(tmp$grobs, function(y) y$name) == "guide-box") 
+  tmp$grobs[[leg]]
+}
+mydata =  rbind.data.frame(orig[orig$ChimearNode==0,],orig[orig$ChimearNode==1,])
+mydata = mydata[which(mydata$Centrality<0.3 & mydata$Flow_IOError< 500),]
+
+#############################
+###### density vs node degree 
+#############################
+
 #placeholder plot - prints nothing at all
-empty <- ggplot()+geom_point(aes(1,1), colour="white") +
-  theme(                              
-    plot.background = element_blank(), 
-    panel.grid.major = element_blank(), 
-    panel.grid.minor = element_blank(), 
-    panel.border = element_blank(), 
-    panel.background = element_blank(),
-    axis.title.x = element_blank(),
-    axis.title.y = element_blank(),
-    axis.text.x = element_blank(),
-    axis.text.y = element_blank(),
-    axis.ticks = element_blank()
-  )
-
-mydata =  merge(orig[orig$ChimearNode==0,],orig[orig$ChimearNode==1,])
-
-#scatterplot of x and y variables
-scatter <- ggplot() + 
-  geom_point(data=foo,
-             aes(x=Centrality,y=Flow_IOError),
-             color=foo$ChimearNode) +
-  scale_color_manual(values = c("orange", "purple")) +
+mydummy  <- ggplot(data=mydata,aes(x=Centrality,y=Flow_IOError)) + 
+  geom_point(aes(color=as.factor(mydata$ChimearNode))) +
+  scale_color_manual(values = c("orange", "purple"),
+                     breaks=c(0,1),
+                     labels=c("Problem node", "Chimaer node")) +
   #theme(  axis.text=element_text(size=12), axis.title=element_text(size=14,face="bold")  ) +
   ylab("Flow IO-Difference") + xlab("Node Degree") +
-  geom_point(size=1.5) +
+  #scale_fill_discrete(breaks=c(0,1),
+   #                     labels=c("Problem node", "Chimaer node") ) +
   theme(legend.position=c(1,1),
-        legend.justification=c(1,1))
+        legend.justification=c(1,1),
+        legend.title = element_blank()
+        )
+
+
+empty = gglegend(mydummy)
+
+#scatterplot of x and y variables
+scatter <- ggplot(data=mydata,aes(x=Centrality,y=Flow_IOError)) + 
+  geom_point(aes(color=as.factor(mydata$ChimearNode))) +
+  scale_color_manual(values = c("orange", "purple")) +
+  #theme(  axis.text=element_text(size=12), axis.title=element_text(size=14,face="bold")  ) +
+  ylab("Flow IO-Difference") + xlab("Degree Centrality") +
+  theme(legend.position="none")
       #  ,
       #  axis.text=element_text(size=12), 
       #  axis.title=element_text(size=14,face="bold") )
  
 #marginal density of x - plot on top
-plot_top <- ggplot() + 
-  geom_density(data=orig[orig$ChimearNode==0,],
-               aes(x=Centrality),fill="orange",alpha=.5) + 
-  geom_density(data=orig[orig$ChimearNode==1,],
-               aes(x=Centrality),fill="purple",alpha=.5) + 
-  theme(axis.title.x=element_blank(),
+plot_top <- ggplot(mydata, aes(mydata$Flow_IOError, fill=as.factor(mydata$ChimearNode))) + 
+  geom_density(alpha=.5) + 
+  scale_fill_manual(values = c("orange", "purple")) + 
+  theme(legend.position="none",
+        axis.title.x=element_blank(),
         axis.text.x=element_blank(),
         axis.ticks.x=element_blank(),
         axis.text.y=element_text(colour="white")
   )
 
 
+
 #marginal density of y - plot on the right
-plot_right <- ggplot() + 
-  geom_density(data=orig[orig$ChimearNode==0,],
-               aes(x=Flow_IOError),fill="orange",alpha=.5) + 
-  geom_density(data=orig[orig$ChimearNode==1,],
-               aes(x=Flow_IOError),fill="purple",alpha=.5) + 
+plot_right <- ggplot(mydata, aes(mydata$Centrality, fill=as.factor(mydata$ChimearNode))) + 
+  geom_density(alpha=.5) + 
   coord_flip() + 
-  theme(axis.title.y=element_blank(),
+  scale_fill_manual(values = c("orange", "purple")) + 
+  theme(legend.position="none",
+        axis.title.y=element_blank(),
         axis.text.y=element_blank(),
         axis.ticks.y=element_blank(),
         axis.text.x=element_text(colour="white")
-        )
-
+  )
 
 #arrange the plots together, with appropriate height and width for each row and column
 grid.arrange(plot_top, empty, scatter, plot_right, ncol=2, nrow=2, widths=c(4, 1), heights=c(1, 4))
